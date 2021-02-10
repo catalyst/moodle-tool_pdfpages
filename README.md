@@ -12,7 +12,7 @@ Download webpages as PDFs in Moodle using wkhtmltopdf.
 git clone git@github.com:catalyst/moodle-tool_pdfpages.git <moodledir>/admin/tool/pdfpages
 ```
 - Upgrade Moodle instance to install plugin.
-- Log into Moodle instance as admin and change the setting `tool_pdfpages|pathtowkhtmltopdf` to the path to your installed wkhtmltopdf binary (on a Unix like system you can find this by using `which wkhtmltopdf`).
+- Log into Moodle instance as admin and change the setting `tool_pdfpages|wkhtmltopdfpath` to the path to your installed wkhtmltopdf binary (on a Unix like system you can find this by using `which wkhtmltopdf`).
 
 ## License ##
 
