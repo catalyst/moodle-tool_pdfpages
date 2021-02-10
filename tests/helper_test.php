@@ -43,11 +43,32 @@ class tool_pdfpages_helper_test extends advanced_testcase {
     public function test_get_config() {
         $this->resetAfterTest();
 
-        set_config('wkhtmltopdfpath', 'tool_pdfpages', '/usr/local/bin/wkhtmltopdf');
+        set_config('wkhtmltopdfpath', '/usr/local/bin/wkhtmltopdf', 'tool_pdfpages');
         $this->assertEquals('/usr/local/bin/wkhtmltopdf', helper::get_config('wkhtmltopdfpath'));
         unset_config('wkhtmltopdfpath', 'tool_pdfpages');
         $this->expectException(coding_exception::class);
         $this->expectExceptionMessage("No configured tool_pdfpages setting 'wkhtmltopdfpath'.");
         helper::get_config('wkhtmltopdfpath');
+    }
+
+    /**
+     * Test getting the filearea for a Moodle URL's converted PDF.
+     */
+    public function test_get_moodle_url_pdf_filearea() {
+        $this->assertEquals('pdf', helper::get_moodle_url_pdf_filearea());
+    }
+
+    /**
+     * Test getting the filename for a Moodle URL's converted PDF.
+     */
+    public function test_get_moodle_url_pdf_filename() {
+        $testurl = 'https://www.nonesuch.com/some/path.index.html?id=55&test=value';
+
+        // The filename for a Moodle URL PDF should be a SHA1 hash of the non-encoded URL string
+        // proceeded by the '.pdf' file extension.
+        $expected = sha1($testurl) . '.pdf';
+
+        $url = new moodle_url($testurl);
+        $this->assertEquals($expected, helper::get_moodle_url_pdf_filename($url));
     }
 }

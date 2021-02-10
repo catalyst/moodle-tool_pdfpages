@@ -25,7 +25,13 @@
 
 namespace tool_pdfpages;
 
+use file_storage;
+use moodle_url;
+
 defined('MOODLE_INTERNAL') || die();
+
+global $CFG;
+require_once($CFG->libdir . '/filestorage/file_storage.php');
 
 /**
  * Class containing helper functions for tool_pdfpages.
@@ -36,6 +42,11 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class helper {
+
+    /**
+     * The filearea to store Moodle URL PDFs in.
+     */
+    const MOODLE_URL_PDF_FILEAREA = 'pdf';
 
     /**
      * Get a tool_pdfpages plugin setting.
@@ -53,5 +64,21 @@ class helper {
         } else {
             return $config;
         }
+    }
+
+    /**
+     * Get the filearea where PDFs of Moodle URLs are stored in plugin files.
+     */
+    public static function get_moodle_url_pdf_filearea() {
+        return static::MOODLE_URL_PDF_FILEAREA;
+    }
+
+    /**
+     * Get the filename used for the PDF of a Moodle URL in plugin files.
+     *
+     * @param \moodle_url $url the Moodle URL to get PDF filename for.
+     */
+    public static function get_moodle_url_pdf_filename(moodle_url $url) {
+        return file_storage::hash_from_string($url->out(false)) . '.pdf';
     }
 }

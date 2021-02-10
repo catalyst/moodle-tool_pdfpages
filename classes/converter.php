@@ -60,8 +60,6 @@ class converter {
             // session which, causes a timeout and failed conversion.
             \core\session\manager::write_close();
 
-            $urlstring = $url->out(false);
-
             $cookiename = session_name();
             $cookie = $_COOKIE[$cookiename];
             $path = helper::get_config('wkhtmltopdfpath');
@@ -70,18 +68,16 @@ class converter {
             $pdf->setOptions($options);
             $pdf->setOption('cookie', [$cookiename => $cookie]);
 
-            $fs = get_file_storage();
-            $filename = $fs::hash_from_string($urlstring);
-
             $fileinfo = [
                 'contextid' => \context_system::instance()->id,
                 'component' => 'tool_pdfpages',
-                'filearea' => 'pdf',
+                'filearea' => helper::get_moodle_url_pdf_filearea(),
                 'itemid' => 0,
                 'filepath' => '/',
-                'filename' => "$filename.pdf"
+                'filename' => helper::get_moodle_url_pdf_filename($url),
             ];
 
+            $fs = get_file_storage();
             $existingfile = $fs->get_file(...array_values($fileinfo));
 
             // If the file already exists, it needs to be deleted, as otherwise the new filename will collide
@@ -90,8 +86,7 @@ class converter {
                 $existingfile->delete();
             }
 
-            $fs->create_file_from_string($fileinfo, $pdf->getOutput($urlstring));
-
+            $fs->create_file_from_string($fileinfo, $pdf->getOutput($url->out(false)));
             $file = $fs->get_file(...array_values($fileinfo));
 
             return $file;
@@ -99,5 +94,27 @@ class converter {
         } catch (\Exception $exception) {
             throw new \moodle_exception('error:urltopdf', 'tool_pdfpages', '', null, $exception->getMessage());
         }
+    }
+
+    /**
+     * Get the converted PDF for a Moodle URL if it exists.
+     *
+     * @param \moodle_url $url the target URL to get converted PDF for.
+     *
+     * @return bool|\stored_file the stored file PDF, false if Moodle URL has not been converted to PDF.
+     */
+    public static function get_converted_moodle_url_pdf(moodle_url $url) {
+        $fs = get_file_storage();
+
+        $fileinfo = [
+            'contextid' => \context_system::instance()->id,
+            'component' => 'tool_pdfpages',
+            'filearea' => helper::get_moodle_url_pdf_filearea(),
+            'itemid' => 0,
+            'filepath' => '/',
+            'filename' => helper::get_moodle_url_pdf_filename($url),
+        ];
+
+        return $fs->get_file(...array_values($fileinfo));
     }
 }
