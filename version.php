@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2021020300;        // The current plugin version (Date: YYYYMMDDXX).
+$plugin->version   = 2021021000;        // The current plugin version (Date: YYYYMMDDXX).
 $plugin->requires  = 2020061504;        // Requires this Moodle version.
 $plugin->component = 'tool_pdfpages';  // Full name of the plugin (used for diagnostics).
 $plugin->maturity = MATURITY_ALPHA;
