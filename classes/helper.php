@@ -111,4 +111,28 @@ class helper {
     public static function get_moodle_url_pdf_filename(moodle_url $url) {
         return file_storage::hash_from_string($url->out(false)) . '.pdf';
     }
+
+    /**
+     * Get file record for a PDF generated from a URL.
+     *
+     * @param \moodle_url $url
+     * @param string $converter
+     *
+     * @return array array describing a file (file_info params)
+     * @throws \coding_exception if converter is not installed or invalid.
+     */
+    public static function get_pdf_filerecord(moodle_url $url, string $converter) : array {
+        if (!in_array($converter, self::get_installed_converters())) {
+            throw new \coding_exception("Cannot get fileinfo for '$converter' converter, not installed or invalid.");
+        }
+
+        return [
+            'contextid' => \context_system::instance()->id,
+            'component' => 'tool_pdfpages',
+            'filearea' => self::get_moodle_url_pdf_filearea(),
+            'itemid' => 0,
+            'filepath' => "/$converter/",
+            'filename' => self::get_moodle_url_pdf_filename($url),
+        ];
+    }
 }

@@ -84,4 +84,31 @@ class tool_pdfpages_helper_test extends advanced_testcase {
         $url = new moodle_url($testurl);
         $this->assertEquals($expected, helper::get_moodle_url_pdf_filename($url));
     }
+
+    /**
+     * Test getting a file record for a converted URL PDF.
+     */
+    public function test_get_pdf_filerecord() {
+        $this->resetAfterTest();
+
+        $testurl = 'https://www.nonesuch.com/some/path.index.html?id=55&test=value';
+        $url = new moodle_url($testurl);
+
+        set_config('wkhtmltopdfpath', '/usr/local/bin/wkhtmltopdf', 'tool_pdfpages');
+
+        $actual = helper::get_pdf_filerecord($url, 'wkhtmltopdf');
+        $this->assertCount(6, $actual);
+        $this->assertIsArray($actual);
+        $this->assertEquals(\context_system::instance()->id, $actual['contextid']);
+        $this->assertEquals('tool_pdfpages', $actual['component']);
+        $this->assertEquals('pdf', $actual['filearea']);
+        $this->assertEquals(0, $actual['itemid']);
+        $this->assertEquals('/wkhtmltopdf/', $actual['filepath']);
+        $this->assertEquals(sha1($url->out(false)) . '.pdf', $actual['filename']);
+
+        unset_config('wkhtmltopdfpath', 'tool_pdfpages');
+        $this->expectException(coding_exception::class);
+        $this->expectExceptionMessage("Cannot get fileinfo for 'wkhtmltopdf' converter, not installed or invalid.");
+        helper::get_pdf_filerecord($url, 'wkhtmltopdf');
+    }
 }

@@ -68,17 +68,9 @@ class converter_wkhtmltopdf implements converter {
             $pdf->setOptions($options);
             $pdf->setOption('cookie', [$cookiename => $cookie]);
 
-            $fileinfo = [
-                'contextid' => \context_system::instance()->id,
-                'component' => 'tool_pdfpages',
-                'filearea' => helper::get_moodle_url_pdf_filearea(),
-                'itemid' => 0,
-                'filepath' => '/',
-                'filename' => helper::get_moodle_url_pdf_filename($url),
-            ];
-
+            $filerecord = helper::get_pdf_filerecord($url, 'wkhtmltopdf');
             $fs = get_file_storage();
-            $existingfile = $fs->get_file(...array_values($fileinfo));
+            $existingfile = $fs->get_file(...array_values($filerecord));
 
             // If the file already exists, it needs to be deleted, as otherwise the new filename will collide
             // with existing filename and the new file will not be able to be created.
@@ -86,8 +78,8 @@ class converter_wkhtmltopdf implements converter {
                 $existingfile->delete();
             }
 
-            $fs->create_file_from_string($fileinfo, $pdf->getOutput($url->out(false)));
-            $file = $fs->get_file(...array_values($fileinfo));
+            $fs->create_file_from_string($filerecord, $pdf->getOutput($url->out(false)));
+            $file = $fs->get_file(...array_values($filerecord));
 
             return $file;
 
@@ -105,16 +97,8 @@ class converter_wkhtmltopdf implements converter {
      */
     public function get_converted_moodle_url_pdf(moodle_url $url) {
         $fs = get_file_storage();
+        $filerecord = helper::get_pdf_filerecord($url, 'wkhtmltopdf');
 
-        $fileinfo = [
-            'contextid' => \context_system::instance()->id,
-            'component' => 'tool_pdfpages',
-            'filearea' => helper::get_moodle_url_pdf_filearea(),
-            'itemid' => 0,
-            'filepath' => '/',
-            'filename' => helper::get_moodle_url_pdf_filename($url),
-        ];
-
-        return $fs->get_file(...array_values($fileinfo));
+        return $fs->get_file(...array_values($filerecord));
     }
 }
