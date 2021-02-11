@@ -41,7 +41,7 @@ require_once($CFG->dirroot . '/admin/tool/pdfpages/vendor/autoload.php');
  * @copyright  2021 Catalyst IT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class converter {
+class converter_wkhtmltopdf implements converter {
 
     /**
      * Convert a moodle URL to PDF and store in file system.
@@ -54,7 +54,7 @@ class converter {
      * @return \stored_file the stored file created during conversion.
      * @throws \moodle_exception if conversion fails.
      */
-    public static function convert_moodle_url_to_pdf(moodle_url $url, array $options = []) {
+    public function convert_moodle_url_to_pdf(moodle_url $url, array $options = []) : \stored_file {
         try {
             // Close the session to prevent current session from blocking wkthmltopdf headless browser
             // session which, causes a timeout and failed conversion.
@@ -103,7 +103,7 @@ class converter {
      *
      * @return bool|\stored_file the stored file PDF, false if Moodle URL has not been converted to PDF.
      */
-    public static function get_converted_moodle_url_pdf(moodle_url $url) {
+    public function get_converted_moodle_url_pdf(moodle_url $url) {
         $fs = get_file_storage();
 
         $fileinfo = [

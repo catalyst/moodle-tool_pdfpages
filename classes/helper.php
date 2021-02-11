@@ -49,6 +49,16 @@ class helper {
     const MOODLE_URL_PDF_FILEAREA = 'pdf';
 
     /**
+     * List of available converters.
+     *
+     * To add a new converter, the following steps need to be conducted:
+     * - Add converter name in this constant;
+     * - Add a setting `<converter name>path` to plugin settings.php for setting path to converter binary;
+     * - Create a class implementing `converter` interface and named `converter_<converter name>`
+     */
+    const CONVERTERS = ['wkhtmltopdf'];
+
+    /**
      * Get a tool_pdfpages plugin setting.
      *
      * @param string $pluginsetting the plugin setting to get value for.
@@ -64,6 +74,26 @@ class helper {
         } else {
             return $config;
         }
+    }
+
+    /**
+     * Get a list of installed converter names.
+     *
+     * @return string[] empty if no converters installed.
+     */
+    public static function get_installed_converters() {
+        $installedconverters = [];
+
+        // TODO: Add setting to change converter priority when multiple are installed.
+
+        foreach (self::CONVERTERS as $converter) {
+            $config = get_config('tool_pdfpages', $converter . 'path');
+            if (!empty($config)) {
+                $installedconverters[] = $converter;
+            }
+        }
+
+        return $installedconverters;
     }
 
     /**

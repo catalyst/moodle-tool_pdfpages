@@ -52,6 +52,19 @@ class tool_pdfpages_helper_test extends advanced_testcase {
     }
 
     /**
+     * Test getting the names of installed converters.
+     */
+    public function test_get_installed_converters() {
+        $this->resetAfterTest();
+
+        set_config('wkhtmltopdfpath', '/usr/local/bin/wkhtmltopdf', 'tool_pdfpages');
+        $this->assertEquals(['wkhtmltopdf'], helper::get_installed_converters());
+
+        unset_config('wkhtmltopdfpath', 'tool_pdfpages');
+        $this->assertEmpty(helper::get_installed_converters());
+    }
+
+    /**
      * Test getting the filearea for a Moodle URL's converted PDF.
      */
     public function test_get_moodle_url_pdf_filearea() {
