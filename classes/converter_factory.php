@@ -46,22 +46,49 @@ class converter_factory {
      * @returns converter A converter instance.
      *
      * @throws \moodle_exception If no converters are correctly installed and set up.
-     * @throws \coding_exception If required converter class is missing.
      */
     public static function get_converter() : converter {
-        $installedconverters = helper::get_installed_converters();
+        $converternames = helper::get_converter_names();
 
-        if (empty($installedconverters)) {
-            throw new \moodle_exception('error:noinstalledconverters', 'tool_pdfpages');
+        foreach ($converternames as $convertername) {
+            $converterclass = "\\tool_pdfpages\\converter_$convertername";
+
+            if (class_exists($converterclass)) {
+                $converter = new $converterclass();
+
+                if ($converter->is_enabled()) {
+                    return $converter;
+                }
+            }
         }
 
-        $convertername = reset($installedconverters);
-        $converterclass = "\\tool_pdfpages\\converter_$convertername";
+        throw new \moodle_exception('error:noenabledconverters', 'tool_pdfpages');
+    }
 
-        if (!class_exists($converterclass)) {
-            throw new \coding_exception("The converter class '$converterclass' has not been implemented, cannot instantiate.");
+    /**
+     * Get multiple converters.
+     *
+     * @param string[] $converternames converter names to get (if empty, get all enabled converters).
+     *
+     * @return \tool_pdfpages\converter[] converter instances.
+     */
+    public static function get_converters(array $converternames = []) {
+        $availableconverters = helper::get_converter_names();
+        $converterstoget = !empty($converternames) ? array_intersect($availableconverters, $converternames) : $availableconverters;
+        $converters = [];
+
+        foreach ($converterstoget as $convertername) {
+            $converterclass = "\\tool_pdfpages\\converter_$convertername";
+
+            if (class_exists($converterclass)) {
+                $converter = new $converterclass();
+
+                if ($converter->is_enabled()) {
+                    $converters[$convertername] = $converter;
+                }
+            }
         }
 
-        return new $converterclass();
+        return $converters;
     }
 }

@@ -25,6 +25,7 @@
 
 namespace tool_pdfpages;
 
+use tool_pdfpages\converter;
 use moodle_url;
 use Knp\Snappy\Pdf;
 
@@ -100,5 +101,19 @@ class converter_wkhtmltopdf implements converter {
         $filerecord = helper::get_pdf_filerecord($url, 'wkhtmltopdf');
 
         return $fs->get_file(...array_values($filerecord));
+    }
+
+    /**
+     * Check if this converter is enabled.
+     *
+     * @return bool true if converter enabled, false otherwise.
+     */
+    public function is_enabled() {
+        try {
+            helper::get_config('wkhtmltopdfpath');
+            return true;
+        } catch (\moodle_exception $exception) {
+            return false;
+        }
     }
 }

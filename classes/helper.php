@@ -77,23 +77,12 @@ class helper {
     }
 
     /**
-     * Get a list of installed converter names.
+     * Get a list of valid converter names.
      *
-     * @return string[] empty if no converters installed.
+     * @return string[] converter names.
      */
-    public static function get_installed_converters() {
-        $installedconverters = [];
-
-        // TODO: Add setting to change converter priority when multiple are installed.
-
-        foreach (self::CONVERTERS as $converter) {
-            $config = get_config('tool_pdfpages', $converter . 'path');
-            if (!empty($config)) {
-                $installedconverters[] = $converter;
-            }
-        }
-
-        return $installedconverters;
+    public static function get_converter_names() {
+        return self::CONVERTERS;
     }
 
     /**
@@ -122,8 +111,8 @@ class helper {
      * @throws \coding_exception if converter is not installed or invalid.
      */
     public static function get_pdf_filerecord(moodle_url $url, string $converter) : array {
-        if (!in_array($converter, self::get_installed_converters())) {
-            throw new \coding_exception("Cannot get fileinfo for '$converter' converter, not installed or invalid.");
+        if (!self::is_converter_enabled($converter)) {
+            throw new \coding_exception("Cannot get fileinfo for '$converter' converter, not installed and/or enabled.");
         }
 
         return [
@@ -134,5 +123,14 @@ class helper {
             'filepath' => "/$converter/",
             'filename' => self::get_moodle_url_pdf_filename($url),
         ];
+    }
+
+    /**
+     * @param string $convertername
+     *
+     * @return bool
+     */
+    public static function is_converter_enabled(string $convertername) {
+        return array_key_exists($convertername, converter_factory::get_converters());
     }
 }

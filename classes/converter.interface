@@ -60,4 +60,11 @@ interface converter {
      * @return bool|\stored_file the stored file PDF, false if Moodle URL has not been converted to PDF.
      */
     public function get_converted_moodle_url_pdf(moodle_url $url);
+
+    /**
+     * Check if the converter is enabled.
+     *
+     * @return bool true if converter enabled, false otherwise.
+     */
+    public function is_enabled();
 }

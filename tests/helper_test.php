@@ -52,19 +52,6 @@ class tool_pdfpages_helper_test extends advanced_testcase {
     }
 
     /**
-     * Test getting the names of installed converters.
-     */
-    public function test_get_installed_converters() {
-        $this->resetAfterTest();
-
-        set_config('wkhtmltopdfpath', '/usr/local/bin/wkhtmltopdf', 'tool_pdfpages');
-        $this->assertEquals(['wkhtmltopdf'], helper::get_installed_converters());
-
-        unset_config('wkhtmltopdfpath', 'tool_pdfpages');
-        $this->assertEmpty(helper::get_installed_converters());
-    }
-
-    /**
      * Test getting the filearea for a Moodle URL's converted PDF.
      */
     public function test_get_moodle_url_pdf_filearea() {
@@ -108,7 +95,20 @@ class tool_pdfpages_helper_test extends advanced_testcase {
 
         unset_config('wkhtmltopdfpath', 'tool_pdfpages');
         $this->expectException(coding_exception::class);
-        $this->expectExceptionMessage("Cannot get fileinfo for 'wkhtmltopdf' converter, not installed or invalid.");
+        $this->expectExceptionMessage("Cannot get fileinfo for 'wkhtmltopdf' converter, not installed and/or enabled.");
         helper::get_pdf_filerecord($url, 'wkhtmltopdf');
+    }
+
+    /**
+     * Test checking if a converter is enabled.
+     */
+    public function test_is_converter_enabled() {
+        $this->resetAfterTest();
+
+        set_config('wkhtmltopdfpath', '/usr/local/bin/wkhtmltopdf', 'tool_pdfpages');
+        $this->assertTrue(helper::is_converter_enabled('wkhtmltopdf'));
+
+        unset_config('wkhtmltopdfpath', 'tool_pdfpages');
+        $this->assertFalse(helper::is_converter_enabled('wkhtmltopdf'));
     }
 }
