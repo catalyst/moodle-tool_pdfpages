@@ -25,6 +25,7 @@
 
 namespace tool_pdfpages;
 
+use HeadlessChromium\Browser;
 use HeadlessChromium\BrowserFactory;
 use HeadlessChromium\Cookies\Cookie;
 use moodle_url;
@@ -45,17 +46,39 @@ require_once($CFG->dirroot . '/admin/tool/pdfpages/vendor/autoload.php');
 class converter_chromium implements converter {
 
     /**
+     * A list of valid options, keyed by option with value being a description.
+     */
+    protected const VALID_OPTIONS = [
+        'landscape' => '(bool) print PDF in landscape',
+        'printBackground' => '(bool) print background colors and images',
+        'displayHeaderFooter' => '(bool) display header and footer',
+        'headerTemplate' => '(string) HTML template to use as header',
+        'footerTemplate' => '(string) HTML template to use as footer',
+        'paperWidth' => '(float) paper width in inches',
+        'paperHeight' => '(float) paper height in inches',
+        'marginTop' => '(float) margin top in inches',
+        'marginBottom' => '(float) margin bottom in inches',
+        'marginLeft'  => '(float) margin left in inches',
+        'marginRight' => '(float) margin right in inches',
+        'preferCSSPageSize' => '(bool) read params directly from @page',
+        'scale' => '(float) scale the page',
+    ];
+
+    /**
      * Convert a moodle URL to PDF and store in file system.
      *
      * Note: If the currently logged in user does not have the correct capabilities to view the
      * target URL, the created PDF will most likely be an error page.
      *
      * @param \moodle_url $url the target URL to convert.
+     * @param array $options any options to be used (@see converter_chromium::VALID_OPTIONS)
      *
      * @return \stored_file the stored file created during conversion.
      * @throws \moodle_exception if conversion fails.
      */
-    public function convert_moodle_url_to_pdf(moodle_url $url, array $options = []) : \stored_file {
+    public function convert_moodle_url_to_pdf(moodle_url $url, array $options = []): \stored_file {
+        $this->validate_options($options);
+
         try {
             // Close the session to prevent current session from blocking wkthmltopdf headless browser
             // session which, causes a timeout and failed conversion.
@@ -101,7 +124,8 @@ class converter_chromium implements converter {
         } catch (\Exception $exception) {
             throw new \moodle_exception('error:urltopdf', 'tool_pdfpages', '', null, $exception->getMessage());
         } finally {
-            if (!empty($browser)) {
+            // Always close the browser instance to ensure that chromium process is stopped.
+            if (!empty($browser) && $browser instanceof Browser) {
                 $browser->close();
             }
         }
@@ -116,7 +140,7 @@ class converter_chromium implements converter {
      */
     public function get_converted_moodle_url_pdf(moodle_url $url) {
         $fs = get_file_storage();
-        $filerecord = helper::get_pdf_filerecord($url, 'wkhtmltopdf');
+        $filerecord = helper::get_pdf_filerecord($url, 'chromium');
 
         return $fs->get_file(...array_values($filerecord));
     }
@@ -126,12 +150,27 @@ class converter_chromium implements converter {
      *
      * @return bool true if converter enabled, false otherwise.
      */
-    public function is_enabled() {
+    public function is_enabled(): bool {
         try {
             helper::get_config('chromiumpath');
             return true;
         } catch (\moodle_exception $exception) {
             return false;
+        }
+    }
+
+    /**
+     * Validate a list of options.
+     *
+     * @param array $options
+     *
+     * @throws \moodle_exception if an option is invalid.
+     */
+    protected function validate_options(array $options) {
+        foreach (array_keys($options) as $option) {
+            if (!array_key_exists($option, self::VALID_OPTIONS)) {
+                throw new \moodle_exception('error:invalidpageoption', 'tool_pdfpages', $option);
+            }
         }
     }
 }
