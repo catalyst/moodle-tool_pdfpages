@@ -43,7 +43,12 @@ require_once($CFG->dirroot . '/admin/tool/pdfpages/vendor/autoload.php');
  * @copyright  2021 Catalyst IT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class converter_chromium implements converter {
+class converter_chromium extends converter {
+
+    /**
+     * Converter name.
+     */
+    protected const NAME = 'chromium';
 
     /**
      * A list of valid options, keyed by option with value being a description.
@@ -86,7 +91,7 @@ class converter_chromium implements converter {
 
             $cookiename = session_name();
             $cookie = $_COOKIE[$cookiename];
-            $path = helper::get_config('chromiumpath');
+            $path = helper::get_config($this->get_name() . 'path');
 
             $browserfactory = new BrowserFactory($path);
             $browser = $browserfactory->createBrowser([
@@ -105,7 +110,7 @@ class converter_chromium implements converter {
             $page->navigate($url->out(false))->waitForNavigation();
             $pdf = $page->pdf($options);
 
-            $filerecord = helper::get_pdf_filerecord($url, 'chromium');
+            $filerecord = helper::get_pdf_filerecord($url, $this->get_name());
             $fs = get_file_storage();
             $existingfile = $fs->get_file(...array_values($filerecord));
 
@@ -128,34 +133,6 @@ class converter_chromium implements converter {
             if (!empty($browser) && $browser instanceof Browser) {
                 $browser->close();
             }
-        }
-    }
-
-    /**
-     * Get the converted PDF for a Moodle URL if it exists.
-     *
-     * @param \moodle_url $url the target URL to get converted PDF for.
-     *
-     * @return bool|\stored_file the stored file PDF, false if Moodle URL has not been converted to PDF.
-     */
-    public function get_converted_moodle_url_pdf(moodle_url $url) {
-        $fs = get_file_storage();
-        $filerecord = helper::get_pdf_filerecord($url, 'chromium');
-
-        return $fs->get_file(...array_values($filerecord));
-    }
-
-    /**
-     * Check if this converter is enabled.
-     *
-     * @return bool true if converter enabled, false otherwise.
-     */
-    public function is_enabled(): bool {
-        try {
-            helper::get_config('chromiumpath');
-            return true;
-        } catch (\moodle_exception $exception) {
-            return false;
         }
     }
 

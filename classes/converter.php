@@ -37,7 +37,12 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2021 Catalyst IT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-interface converter {
+abstract class converter {
+
+    /**
+     * Converter name, override in extending classes.
+     */
+    protected const NAME = 'base';
 
     /**
      * Convert a moodle URL to PDF and store in file system.
@@ -50,9 +55,10 @@ interface converter {
      * instance, see relevant converter for further details.
      *
      * @return \stored_file the stored file created during conversion.
-     * @throws \moodle_exception if conversion fails.
      */
-    public function convert_moodle_url_to_pdf(moodle_url $url, array $options = []): \stored_file;
+    public function convert_moodle_url_to_pdf(moodle_url $url, array $options = []): \stored_file {
+        // Implement converter specific logic for URL PDF extraction here.
+    }
 
     /**
      * Get the converted PDF for a Moodle URL if it exists.
@@ -61,12 +67,33 @@ interface converter {
      *
      * @return bool|\stored_file the stored file PDF, false if Moodle URL has not been converted to PDF.
      */
-    public function get_converted_moodle_url_pdf(moodle_url $url);
+    public function get_converted_moodle_url_pdf(moodle_url $url) {
+        $fs = get_file_storage();
+        $filerecord = helper::get_pdf_filerecord($url, $this->get_name());
+
+        return $fs->get_file(...array_values($filerecord));
+    }
 
     /**
-     * Check if the converter is enabled.
+     * Get the converter name.
+     *
+     * @return string the converter name.
+     */
+    public function get_name(): string {
+        return self::NAME;
+    }
+
+    /**
+     * Check if this converter is enabled.
      *
      * @return bool true if converter enabled, false otherwise.
      */
-    public function is_enabled(): bool;
+    public function is_enabled(): bool {
+        try {
+            helper::get_config($this->get_name() . 'path');
+            return true;
+        } catch (\moodle_exception $exception) {
+            return false;
+        }
+    }
 }

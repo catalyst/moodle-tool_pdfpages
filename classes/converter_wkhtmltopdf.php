@@ -41,7 +41,12 @@ require_once($CFG->dirroot . '/admin/tool/pdfpages/vendor/autoload.php');
  * @copyright  2021 Catalyst IT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class converter_wkhtmltopdf implements converter {
+class converter_wkhtmltopdf extends converter {
+
+    /**
+     * Converter name.
+     */
+    protected const NAME = 'wkhtmltopdf';
 
     /**
      * A list of valid options.
@@ -202,13 +207,13 @@ class converter_wkhtmltopdf implements converter {
 
             $cookiename = session_name();
             $cookie = $_COOKIE[$cookiename];
-            $path = helper::get_config('wkhtmltopdfpath');
+            $path = helper::get_config($this->get_name() . 'path');
 
             $pdf = new Pdf($path);
             $pdf->setOptions($options);
             $pdf->setOption('cookie', [$cookiename => $cookie]);
 
-            $filerecord = helper::get_pdf_filerecord($url, 'wkhtmltopdf');
+            $filerecord = helper::get_pdf_filerecord($url, $this->get_name());
             $fs = get_file_storage();
             $existingfile = $fs->get_file(...array_values($filerecord));
 
@@ -225,34 +230,6 @@ class converter_wkhtmltopdf implements converter {
 
         } catch (\Exception $exception) {
             throw new \moodle_exception('error:urltopdf', 'tool_pdfpages', '', null, $exception->getMessage());
-        }
-    }
-
-    /**
-     * Get the converted PDF for a Moodle URL if it exists.
-     *
-     * @param \moodle_url $url the target URL to get converted PDF for.
-     *
-     * @return bool|\stored_file the stored file PDF, false if Moodle URL has not been converted to PDF.
-     */
-    public function get_converted_moodle_url_pdf(moodle_url $url) {
-        $fs = get_file_storage();
-        $filerecord = helper::get_pdf_filerecord($url, 'wkhtmltopdf');
-
-        return $fs->get_file(...array_values($filerecord));
-    }
-
-    /**
-     * Check if this converter is enabled.
-     *
-     * @return bool true if converter enabled, false otherwise.
-     */
-    public function is_enabled(): bool {
-        try {
-            helper::get_config('wkhtmltopdfpath');
-            return true;
-        } catch (\moodle_exception $exception) {
-            return false;
         }
     }
 
