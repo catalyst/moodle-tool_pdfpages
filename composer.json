@@ -1,0 +1,5 @@
+{
+    "require": {
+        "knplabs/knp-snappy": "^1.2"
+    }
+}
