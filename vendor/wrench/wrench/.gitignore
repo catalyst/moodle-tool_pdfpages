@@ -1,0 +1,10 @@
+*.sw[m-p]
+phpunit
+build
+doc/build
+vendor
+bin
+composer.phar
+examples/generated.pem
+nbproject/*
+.phpunit.result.cache

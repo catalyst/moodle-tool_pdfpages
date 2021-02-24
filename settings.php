@@ -34,4 +34,9 @@ if (!empty($hassiteconfig)) {
         get_string('settings:wkhtmltopdfpath', 'tool_pdfpages'),
         get_string('settings:wkhtmltopdfpath_desc', 'tool_pdfpages'),
         '', PARAM_PATH));
+
+    $settings->add(new admin_setting_configtext('tool_pdfpages/chromiumpath',
+        get_string('settings:chromiumpath', 'tool_pdfpages'),
+        get_string('settings:chromiumpath_desc', 'tool_pdfpages'),
+        '', PARAM_PATH));
 }

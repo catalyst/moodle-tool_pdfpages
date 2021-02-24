@@ -29,5 +29,7 @@ $string['pluginname'] = 'PDF Pages';
 $string['error:noenabledconverters'] = 'No converters are currently enabled, please check tool_pages plugin settings.';
 $string['error:wkhtmltopdfpath'] = 'Cannot establish path to wkhtmltopdf, please check setting tool_pdfpages|wkhtmltopdfpath.';
 $string['error:urltopdf'] = 'URL to PDF conversion could not be completed.';
+$string['settings:chromiumpath'] = 'chromium binary';
+$string['settings:chromiumpath_desc'] = 'The path to the chrome/chromium binary';
 $string['settings:wkhtmltopdfpath'] = 'wkhtmltopdf binary';
 $string['settings:wkhtmltopdfpath_desc'] = 'The path to wkhtmltopdf binary';

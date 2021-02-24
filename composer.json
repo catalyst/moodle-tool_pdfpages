@@ -1,5 +1,6 @@
 {
     "require": {
-        "knplabs/knp-snappy": "^1.2"
+        "knplabs/knp-snappy": "^1.2",
+        "chrome-php/chrome": "^0.9.0"
     }
 }

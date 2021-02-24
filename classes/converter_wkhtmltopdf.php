@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Class for converting Moodle pages to PDFs.
+ * Class for converting Moodle pages to PDFs using wkhtmltopdf.
  *
  * @package    tool_pdfpages
  * @author     Tom Dickman <tomdickman@catalyst-au.net>
@@ -25,7 +25,6 @@
 
 namespace tool_pdfpages;
 
-use tool_pdfpages\converter;
 use moodle_url;
 use Knp\Snappy\Pdf;
 
@@ -35,7 +34,7 @@ global $CFG;
 require_once($CFG->dirroot . '/admin/tool/pdfpages/vendor/autoload.php');
 
 /**
- * Class for converting Moodle pages to PDFs.
+ * Class for converting Moodle pages to PDFs using wkhtmltopdf.
  *
  * @package    tool_pdfpages
  * @author     Tom Dickman <tomdickman@catalyst-au.net>

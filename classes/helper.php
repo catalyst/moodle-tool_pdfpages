@@ -56,7 +56,7 @@ class helper {
      * - Add a setting `<converter name>path` to plugin settings.php for setting path to converter binary;
      * - Create a class implementing `converter` interface and named `converter_<converter name>`
      */
-    const CONVERTERS = ['wkhtmltopdf'];
+    const CONVERTERS = ['wkhtmltopdf', 'chromium'];
 
     /**
      * Get a tool_pdfpages plugin setting.

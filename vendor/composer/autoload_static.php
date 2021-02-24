@@ -8,13 +8,16 @@ class ComposerStaticInit216c2b983c47aa208f9ff743210d4d86
 {
     public static $files = array (
         'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
+        '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
     );
 
     public static $prefixLengthsPsr4 = array (
         'S' => 
         array (
             'Symfony\\Polyfill\\Php80\\' => 23,
+            'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Component\\Process\\' => 26,
+            'Symfony\\Component\\Filesystem\\' => 29,
         ),
         'P' => 
         array (
@@ -24,6 +27,14 @@ class ComposerStaticInit216c2b983c47aa208f9ff743210d4d86
         array (
             'Knp\\Snappy\\' => 11,
         ),
+        'H' => 
+        array (
+            'HeadlessChromium\\' => 17,
+        ),
+        'A' => 
+        array (
+            'Apix\\Log\\' => 9,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -31,9 +42,17 @@ class ComposerStaticInit216c2b983c47aa208f9ff743210d4d86
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
         ),
+        'Symfony\\Polyfill\\Ctype\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
+        ),
         'Symfony\\Component\\Process\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/process',
+        ),
+        'Symfony\\Component\\Filesystem\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/filesystem',
         ),
         'Psr\\Log\\' => 
         array (
@@ -42,6 +61,31 @@ class ComposerStaticInit216c2b983c47aa208f9ff743210d4d86
         'Knp\\Snappy\\' => 
         array (
             0 => __DIR__ . '/..' . '/knplabs/knp-snappy/src/Knp/Snappy',
+        ),
+        'HeadlessChromium\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/chrome-php/chrome/src',
+        ),
+        'Apix\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/apix/log/src',
+        ),
+    );
+
+    public static $prefixesPsr0 = array (
+        'W' => 
+        array (
+            'Wrench' => 
+            array (
+                0 => __DIR__ . '/..' . '/wrench/wrench/lib',
+            ),
+        ),
+        'E' => 
+        array (
+            'Evenement' => 
+            array (
+                0 => __DIR__ . '/..' . '/evenement/evenement/src',
+            ),
         ),
     );
 
@@ -58,6 +102,7 @@ class ComposerStaticInit216c2b983c47aa208f9ff743210d4d86
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit216c2b983c47aa208f9ff743210d4d86::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit216c2b983c47aa208f9ff743210d4d86::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit216c2b983c47aa208f9ff743210d4d86::$prefixesPsr0;
             $loader->classMap = ComposerStaticInit216c2b983c47aa208f9ff743210d4d86::$classMap;
 
         }, null, ClassLoader::class);
