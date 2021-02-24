@@ -1,8 +1,14 @@
 # PDF pages
-Download webpages as PDFs in Moodle using wkhtmltopdf.
+Download webpages as PDFs in Moodle.
 
 1. [Installation](#installation)
+2. [Requirements](#requirements)
 2. [License](#license)
+
+## Requirements
+
+This plugin requires the following:
+- PHP 7.1+
 
 ## Installation
 

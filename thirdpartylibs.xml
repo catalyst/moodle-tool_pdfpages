@@ -28,4 +28,11 @@
         <license>MIT</license>
         <licenseversion>1.0</licenseversion>
     </library>
+    <library>
+        <location>vendor/chrome-php/chrome</location>
+        <name>Chrome Devtools Protocol for PHP</name>
+        <version>5.2.2</version>
+        <license>MIT</license>
+        <licenseversion>1.0</licenseversion>
+    </library>
 </libraries>
