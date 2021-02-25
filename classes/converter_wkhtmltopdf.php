@@ -243,7 +243,7 @@ class converter_wkhtmltopdf extends converter {
     protected function validate_options(array $options) {
         foreach (array_keys($options) as $option) {
             if (!in_array($option, self::VALID_OPTIONS)) {
-                throw new \moodle_exception('error:invalidpageoption', 'tool_pdfpages', $option);
+                throw new \moodle_exception('error:invalidpageoption', 'tool_pdfpages', '', $option);
             }
         }
     }

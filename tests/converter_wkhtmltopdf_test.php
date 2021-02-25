@@ -88,4 +88,33 @@ class converter_wkhtmltopdf_test extends advanced_testcase {
         unset_config('wkhtmltopdfpath', 'tool_pdfpages');
         $this->assertFalse($converter->is_enabled());
     }
+
+    /**
+     * Test validating converter options.
+     */
+    public function test_validate_options() {
+        // Testing a protected method, so we need to setup reflector magic.
+        $method = new ReflectionMethod('\tool_pdfpages\converter_wkhtmltopdf', 'validate_options');
+        $method->setAccessible(true); // Allow accessing of protected method.
+
+        $converter = new converter_wkhtmltopdf();
+        $options = [
+            'print-media-type' => true,
+            'enable-javascript' => true,
+            'javascript-delay' => 200,
+            'background' => true,
+            'header-html' => '<p>Header template</p>',
+            'footer-html' => '<p>Footer template</p>',
+            'page-size' => 'A4',
+            'margin-top' => '0',
+            'margin-bottom' => '10mm',
+            'margin-left'  => '10mm',
+            'margin-right' => '10mm',
+            'afakeoption' => true // Not a valid option.
+        ];
+
+        $this->expectException(moodle_exception::class);
+        $this->expectExceptionMessage('The PDF page option you selected is not supported: afakeoption');
+        $method->invoke($converter, $options);
+    }
 }

@@ -88,4 +88,35 @@ class converter_chromium_test extends advanced_testcase {
         unset_config('chromiumpath', 'tool_pdfpages');
         $this->assertFalse($converter->is_enabled());
     }
+
+    /**
+     * Test validating converter options.
+     */
+    public function test_validate_options() {
+        // Testing a protected method, so we need to setup reflector magic.
+        $method = new ReflectionMethod('\tool_pdfpages\converter_chromium', 'validate_options');
+        $method->setAccessible(true); // Allow accessing of protected method.
+
+        $converter = new converter_chromium();
+        $options = [
+            'landscape' => true,
+            'printBackground' => true,
+            'displayHeaderFooter' => true,
+            'headerTemplate' => '<p>Header template</p>',
+            'footerTemplate' => '<p>Footer template</p>',
+            'paperWidth' => 6.0,
+            'paperHeight' => 6.0,
+            'marginTop' => 0.0,
+            'marginBottom' => 1.4,
+            'marginLeft'  => 0.4,
+            'marginRight' => 0.4,
+            'preferCSSPageSize' => true,
+            'scale' => 1.0,
+            'afakeoption' => true // Not a valid option.
+        ];
+
+        $this->expectException(moodle_exception::class);
+        $this->expectExceptionMessage('The PDF page option you selected is not supported: afakeoption');
+        $method->invoke($converter, $options);
+    }
 }
