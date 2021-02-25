@@ -27,9 +27,6 @@ namespace tool_pdfpages;
 
 defined('MOODLE_INTERNAL') || die();
 
-global $CFG;
-require_once($CFG->dirroot . '/admin/tool/pdfpages/classes/converter.interface');
-
 /**
  * Factory for getting a converter.
  *
@@ -43,26 +40,21 @@ class converter_factory {
     /**
      * Instantiate a converter.
      *
+     * @param string $name specific converter name to get instance of.
+     *
      * @returns converter A converter instance.
      *
-     * @throws \moodle_exception If no converters are correctly installed and set up.
+     * @throws \moodle_exception If converter could not be found.
      */
-    public static function get_converter() : converter {
-        $converternames = helper::get_converter_names();
+    public static function get_converter(string $name = ''): converter {
+        $converternames = empty($name) ? helper::get_converter_names() : [$name];
+        $converters = self::get_converters($converternames);
 
-        foreach ($converternames as $convertername) {
-            $converterclass = "\\tool_pdfpages\\converter_$convertername";
-
-            if (class_exists($converterclass)) {
-                $converter = new $converterclass();
-
-                if ($converter->is_enabled()) {
-                    return $converter;
-                }
-            }
+        if (empty($converters)) {
+            throw new \moodle_exception('error:converternotfound', 'tool_pdfpages');
         }
 
-        throw new \moodle_exception('error:noenabledconverters', 'tool_pdfpages');
+        return reset($converters);
     }
 
     /**
@@ -72,7 +64,7 @@ class converter_factory {
      *
      * @return \tool_pdfpages\converter[] converter instances.
      */
-    public static function get_converters(array $converternames = []) {
+    public static function get_converters(array $converternames = []): array {
         $availableconverters = helper::get_converter_names();
         $converterstoget = !empty($converternames) ? array_intersect($availableconverters, $converternames) : $availableconverters;
         $converters = [];

@@ -3,7 +3,8 @@ Download webpages as PDFs in Moodle.
 
 1. [Installation](#installation)
 2. [Requirements](#requirements)
-2. [License](#license)
+3. [Usage](#usage)
+4. [License](#license)
 
 ## Requirements
 
@@ -33,7 +34,29 @@ git clone git@github.com:catalyst/moodle-tool_pdfpages.git <moodledir>/admin/too
 - Upgrade Moodle instance to install plugin.
 - Log into Moodle instance as admin and change the setting `tool_pdfpages|wkhtmltopdfpath` to the path to your installed wkhtmltopdf binary (on a Unix like system you can find this by using `which wkhtmltopdf`).
 
-## License ##
+## Usage
+
+Use of the converter requires programmatic access, there in no frontend associated with this plugin, so you need to develop another module, or add this plugin to the dependencies of an existing Moodle plugin.
+
+- Create a converter instance using the factory passing in a converter name (`chromium` or `wkhtmltopdf`) or you can leave it empty to grab the first enabled converter found (if no converters are configured correctly, an exception will be thrown):
+```php
+$converter = converter_factory::get_converter('chromium');
+```
+- Pass a Moodle URL instance into the converter to create the PDF file and return a `\stored_file` instance for that file:
+```php
+$url = new \moodle_url('course/view.php', ['id' => 1337]);
+$file = $converter->convert_moodle_url_to_pdf($url);
+```
+- If you want to see the PDF rendered in the browser, send it to the browser:
+```php
+send_file($file, $file->get_filename());
+```
+- To fetch a previously created PDF for a URL by a converter (if no conversion record exists for the URL in question, `false` will be returned):
+```php
+$file = $converter->get_converted_moodle_url_pdf($url);
+```
+
+## License
 
 2021 Catalyst IT Australia
 

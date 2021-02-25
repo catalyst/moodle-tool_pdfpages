@@ -80,7 +80,7 @@ abstract class converter {
      * @return string the converter name.
      */
     public function get_name(): string {
-        return self::NAME;
+        return static::NAME;
     }
 
     /**

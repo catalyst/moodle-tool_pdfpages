@@ -44,14 +44,26 @@ class converter_factory_test extends advanced_testcase {
         $this->resetAfterTest();
 
         set_config('wkhtmltopdfpath', '/usr/local/bin/wkhtmltopdf', 'tool_pdfpages');
+        set_config('chromiumpath', '/usr/bin/chromium-browser', 'tool_pdfpages');
 
+        // Should get specific converter if name specified.
+        $actual = converter_factory::get_converter('wkhtmltopdf');
+        $this->assertInstanceOf(\tool_pdfpages\converter_wkhtmltopdf::class, $actual);
+        $this->assertTrue($actual->is_enabled());
+
+        // Should get first converter if multiple installed.
+        $actual = converter_factory::get_converter();
+        $this->assertInstanceOf(\tool_pdfpages\converter_chromium::class, $actual);
+        $this->assertTrue($actual->is_enabled());
+        unset_config('chromiumpath', 'tool_pdfpages');
         $actual = converter_factory::get_converter();
         $this->assertInstanceOf(\tool_pdfpages\converter_wkhtmltopdf::class, $actual);
         $this->assertTrue($actual->is_enabled());
 
+        // Should throw an exception if no installed converters.
         unset_config('wkhtmltopdfpath', 'tool_pdfpages');
         $this->expectException(moodle_exception::class);
-        $this->expectExceptionMessage('No converters are currently enabled, please check tool_pages plugin settings.');
+        $this->expectExceptionMessage('Could not find enabled converter, please check tool_pages plugin settings.');
         converter_factory::get_converter();
     }
 
@@ -62,14 +74,19 @@ class converter_factory_test extends advanced_testcase {
         $this->resetAfterTest();
 
         set_config('wkhtmltopdfpath', '/usr/local/bin/wkhtmltopdf', 'tool_pdfpages');
+        set_config('chromiumpath', '/usr/bin/chromium-browser', 'tool_pdfpages');
 
         $actual = converter_factory::get_converters();
-        $this->assertCount(1, $actual);
+        $this->assertCount(2, $actual);
         $this->assertArrayHasKey('wkhtmltopdf', $actual);
+        $this->assertArrayHasKey('chromium', $actual);
         $this->assertInstanceOf(\tool_pdfpages\converter_wkhtmltopdf::class, $actual['wkhtmltopdf']);
+        $this->assertInstanceOf(\tool_pdfpages\converter_chromium::class, $actual['chromium']);
         $this->assertTrue($actual['wkhtmltopdf']->is_enabled());
+        $this->assertTrue($actual['chromium']->is_enabled());
 
         unset_config('wkhtmltopdfpath', 'tool_pdfpages');
+        unset_config('chromiumpath', 'tool_pdfpages');
         $this->assertEmpty(converter_factory::get_converters());
     }
 }
