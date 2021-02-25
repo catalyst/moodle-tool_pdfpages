@@ -54,7 +54,7 @@ class helper {
      * To add a new converter, the following steps need to be conducted:
      * - Add converter name in this constant;
      * - Add a setting `<converter name>path` to plugin settings.php for setting path to converter binary;
-     * - Create a class implementing `converter` interface and named `converter_<converter name>`
+     * - Create a class extending `converter` abstract class and named `converter_<converter name>`
      */
     const CONVERTERS = ['chromium', 'wkhtmltopdf'];
 
