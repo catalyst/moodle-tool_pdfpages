@@ -1,8 +1,15 @@
 <?xml version="1.0"?>
 <libraries>
     <library>
+        <location>vendor/autoload.php</location>
+        <name>Composer autoloader</name>
+        <version>2.0.9</version>
+        <license>MIT</license>
+        <licenseversion>1.0</licenseversion>
+    </library>
+    <library>
         <location>vendor/composer</location>
-        <name>Composer internals</name>
+        <name>Composer</name>
         <version>2.0.9</version>
         <license>MIT</license>
         <licenseversion>1.0</licenseversion>
