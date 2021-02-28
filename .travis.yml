@@ -14,8 +14,6 @@ cache:
     - $HOME/.npm
 
 php:
-  - 7.1
-  - 7.2
   - 7.3
   - 7.4
 
@@ -28,9 +26,6 @@ env:
 
 before_install:
   - phpenv config-rm xdebug.ini
-  - NVMVERSION=14.0.0
-  - nvm install $NVMVERSION;
-  - nvm use $NVMVERSION;
   - cd ../..
   - composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^3
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"

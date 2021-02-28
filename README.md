@@ -9,7 +9,7 @@ Download webpages as PDFs in Moodle.
 ## Requirements
 
 This plugin requires the following:
-- PHP 7.1+
+- PHP 7.2+
 
 ## Installation
 
