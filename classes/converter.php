@@ -46,17 +46,19 @@ abstract class converter {
 
     /**
      * Convert a moodle URL to PDF and store in file system.
-     *
      * Note: If the currently logged in user does not have the correct capabilities to view the
      * target URL, the created PDF will most likely be an error page.
      *
      * @param \moodle_url $url the target URL to convert.
      * @param array $options any additional options to pass to converter, valid options vary with converter
      * instance, see relevant converter for further details.
+     * @param string $cookiename cookie name to apply to conversion (optional).
+     * @param string $cookievalue cookie value to apply to conversion (optional).
      *
      * @return \stored_file the stored file created during conversion.
      */
-    public function convert_moodle_url_to_pdf(moodle_url $url, array $options = []): \stored_file {
+    public function convert_moodle_url_to_pdf(moodle_url $url, array $options = [],
+                                              string $cookiename = '', string $cookievalue = ''): \stored_file {
         // Implement converter specific logic for URL PDF extraction here.
     }
 

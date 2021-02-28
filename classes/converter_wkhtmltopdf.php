@@ -195,23 +195,27 @@ class converter_wkhtmltopdf extends converter {
      *
      * @param \moodle_url $url the target URL to convert.
      * @param array $options any options to be used (@see converter_wkhtmltopdf::VALID_OPTIONS)
+     * @param string $cookiename cookie name to apply to conversion (optional).
+     * @param string $cookievalue cookie value to apply to conversion (optional).
      *
      * @return \stored_file the stored file created during conversion.
      * @throws \moodle_exception if conversion fails.
      */
-    public function convert_moodle_url_to_pdf(moodle_url $url, array $options = []): \stored_file {
+    public function convert_moodle_url_to_pdf(moodle_url $url, array $options = [],
+                                              string $cookiename = '', string $cookievalue = ''): \stored_file {
         try {
             // Close the session to prevent current session from blocking wkthmltopdf headless browser
             // session which, causes a timeout and failed conversion.
             \core\session\manager::write_close();
 
-            $cookiename = session_name();
-            $cookie = $_COOKIE[$cookiename];
             $path = helper::get_config($this->get_name() . 'path');
 
             $pdf = new Pdf($path);
             $pdf->setOptions($options);
-            $pdf->setOption('cookie', [$cookiename => $cookie]);
+
+            if (!empty($cookiename) && !empty($cookievalue)) {
+                $pdf->setOption('cookie', [$cookiename => $cookievalue]);
+            }
 
             $filerecord = helper::get_pdf_filerecord($url, $this->get_name());
             $fs = get_file_storage();

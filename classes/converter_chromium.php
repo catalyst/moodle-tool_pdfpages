@@ -28,7 +28,9 @@ namespace tool_pdfpages;
 use HeadlessChromium\Browser;
 use HeadlessChromium\BrowserFactory;
 use HeadlessChromium\Cookies\Cookie;
+use HeadlessChromium\Page;
 use moodle_url;
+use tool_webanalytics\plugin_manager;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -71,17 +73,19 @@ class converter_chromium extends converter {
 
     /**
      * Convert a moodle URL to PDF and store in file system.
-     *
      * Note: If the currently logged in user does not have the correct capabilities to view the
      * target URL, the created PDF will most likely be an error page.
      *
      * @param \moodle_url $url the target URL to convert.
      * @param array $options any options to be used (@see converter_chromium::VALID_OPTIONS)
+     * @param string $cookiename cookie name to apply to conversion (optional).
+     * @param string $cookievalue cookie value to apply to conversion (optional).
      *
      * @return \stored_file the stored file created during conversion.
      * @throws \moodle_exception if conversion fails.
      */
-    public function convert_moodle_url_to_pdf(moodle_url $url, array $options = []): \stored_file {
+    public function convert_moodle_url_to_pdf(moodle_url $url, array $options = [],
+                                              string $cookiename = '', string $cookievalue = ''): \stored_file {
         $this->validate_options($options);
 
         try {
@@ -89,8 +93,6 @@ class converter_chromium extends converter {
             // session which, causes a timeout and failed conversion.
             \core\session\manager::write_close();
 
-            $cookiename = session_name();
-            $cookie = $_COOKIE[$cookiename];
             $path = helper::get_config($this->get_name() . 'path');
 
             $browserfactory = new BrowserFactory($path);
@@ -100,12 +102,14 @@ class converter_chromium extends converter {
             ]);
 
             $page = $browser->createPage();
-            $page->setCookies([
-                Cookie::create($cookiename, $cookie, [
-                    'domain' => $url->get_host(),
-                    'expires' => time() + DAYSECS
-                ])
-            ])->await();
+            if (!empty($cookiename) && !empty($cookievalue)) {
+                $page->setCookies([
+                    Cookie::create($cookiename, $cookievalue, [
+                        'domain' => $url->get_host(),
+                        'expires' => time() + DAYSECS
+                    ])
+                ])->await();
+            }
 
             $page->navigate($url->out(false))->waitForNavigation();
             $pdf = $page->pdf($options);
