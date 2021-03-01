@@ -126,9 +126,11 @@ class helper {
     }
 
     /**
-     * @param string $convertername
+     * Check if a converter is enabled.
      *
-     * @return bool
+     * @param string $convertername the name of the converter to check.
+     *
+     * @return bool true if enabled, false otherwise.
      */
     public static function is_converter_enabled(string $convertername) {
         return array_key_exists($convertername, converter_factory::get_converters());

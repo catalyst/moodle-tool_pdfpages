@@ -42,7 +42,7 @@ class converter_factory {
      *
      * @param string $name specific converter name to get instance of.
      *
-     * @returns converter A converter instance.
+     * @return converter A converter instance.
      *
      * @throws \moodle_exception If converter could not be found.
      */
