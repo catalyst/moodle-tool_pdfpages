@@ -1,3 +1,5 @@
+![Build Status](https://travis-ci.org/catalyst/moodle-tool_pdfpages.svg?branch=VERSION1)
+
 # PDF pages
 Download webpages as PDFs in Moodle.
 
