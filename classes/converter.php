@@ -50,6 +50,8 @@ abstract class converter {
      * target URL, the created PDF will most likely be an error page.
      *
      * @param \moodle_url $url the target URL to convert.
+     * @param string $filename the name to give converted file.
+     * (if none is specified, use {@see helper::get_moodle_url_pdf_filename})
      * @param array $options any additional options to pass to converter, valid options vary with converter
      * instance, see relevant converter for further details.
      * @param string $cookiename cookie name to apply to conversion (optional).
@@ -57,21 +59,44 @@ abstract class converter {
      *
      * @return \stored_file the stored file created during conversion.
      */
-    public function convert_moodle_url_to_pdf(moodle_url $url, array $options = [],
+    public function convert_moodle_url_to_pdf(moodle_url $url, string $filename = '', array $options = [],
                                               string $cookiename = '', string $cookievalue = ''): \stored_file {
         // Implement converter specific logic for URL PDF extraction here.
     }
 
     /**
-     * Get the converted PDF for a Moodle URL if it exists.
+     * Create a PDF file from content.
      *
-     * @param \moodle_url $url the target URL to get converted PDF for.
+     * @param string $content the PDF content to write to file.
+     * @param string $filename the filename to give file.
      *
-     * @return bool|\stored_file the stored file PDF, false if Moodle URL has not been converted to PDF.
+     * @return bool|\stored_file the file or false if file could not be created.
      */
-    public function get_converted_moodle_url_pdf(moodle_url $url) {
+    public function create_pdf_file(string $content, string $filename) {
+
+        $filerecord = helper::get_pdf_filerecord($filename, $this->get_name());
         $fs = get_file_storage();
-        $filerecord = helper::get_pdf_filerecord($url, $this->get_name());
+        $existingfile = $fs->get_file(...array_values($filerecord));
+
+        // If the file already exists, it needs to be deleted, as otherwise the new filename will collide
+        // with existing filename and the new file will not be able to be created.
+        if (!empty($existingfile)) {
+            $existingfile->delete();
+        }
+
+        return $fs->create_file_from_string($filerecord, $content);
+    }
+
+    /**
+     * Get a previously converted URL PDF.
+     *
+     * @param string $filename the filename of conversion file to get.
+     *
+     * @return bool|\stored_file the file or false if file could not be found.
+     */
+    public function get_converted_moodle_url_pdf(string $filename) {
+        $filerecord = helper::get_pdf_filerecord($filename, $this->get_name());
+        $fs = get_file_storage();
 
         return $fs->get_file(...array_values($filerecord));
     }

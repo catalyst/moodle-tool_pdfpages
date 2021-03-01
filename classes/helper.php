@@ -102,15 +102,15 @@ class helper {
     }
 
     /**
-     * Get file record for a PDF generated from a URL.
+     * Get file record for a converter created PDF.
      *
-     * @param \moodle_url $url
-     * @param string $converter
+     * @param string $filename the name of the PDF file.
+     * @param string $converter the converter which conducted the conversion.
      *
      * @return array array describing a file (file_info params)
      * @throws \coding_exception if converter is not installed or invalid.
      */
-    public static function get_pdf_filerecord(moodle_url $url, string $converter) : array {
+    public static function get_pdf_filerecord(string $filename, string $converter) : array {
         if (!self::is_converter_enabled($converter)) {
             throw new \coding_exception("Cannot get fileinfo for '$converter' converter, not installed and/or enabled.");
         }
@@ -121,7 +121,7 @@ class helper {
             'filearea' => self::get_moodle_url_pdf_filearea(),
             'itemid' => 0,
             'filepath' => "/$converter/",
-            'filename' => self::get_moodle_url_pdf_filename($url),
+            'filename' => $filename,
         ];
     }
 

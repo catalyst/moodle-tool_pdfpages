@@ -28,9 +28,7 @@ namespace tool_pdfpages;
 use HeadlessChromium\Browser;
 use HeadlessChromium\BrowserFactory;
 use HeadlessChromium\Cookies\Cookie;
-use HeadlessChromium\Page;
 use moodle_url;
-use tool_webanalytics\plugin_manager;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -77,25 +75,24 @@ class converter_chromium extends converter {
      * target URL, the created PDF will most likely be an error page.
      *
      * @param \moodle_url $url the target URL to convert.
-     * @param array $options any options to be used (@see converter_chromium::VALID_OPTIONS)
+     * @param string $filename the name to give converted file.
+     * @param array $options any options to be used {@see converter_chromium::VALID_OPTIONS}
      * @param string $cookiename cookie name to apply to conversion (optional).
      * @param string $cookievalue cookie value to apply to conversion (optional).
      *
      * @return \stored_file the stored file created during conversion.
      * @throws \moodle_exception if conversion fails.
      */
-    public function convert_moodle_url_to_pdf(moodle_url $url, array $options = [],
+    public function convert_moodle_url_to_pdf(moodle_url $url, string $filename = '', array $options = [],
                                               string $cookiename = '', string $cookievalue = ''): \stored_file {
         $this->validate_options($options);
 
         try {
-            // Close the session to prevent current session from blocking wkthmltopdf headless browser
+            // Close the session to prevent current session from blocking chromium headless browser
             // session which, causes a timeout and failed conversion.
             \core\session\manager::write_close();
 
-            $path = helper::get_config($this->get_name() . 'path');
-
-            $browserfactory = new BrowserFactory($path);
+            $browserfactory = new BrowserFactory(helper::get_config($this->get_name() . 'path'));
             $browser = $browserfactory->createBrowser([
                 'headless' => true,
                 'noSandbox' => true
@@ -113,22 +110,13 @@ class converter_chromium extends converter {
 
             $page->navigate($url->out(false))->waitForNavigation();
             $pdf = $page->pdf($options);
+            $content = base64_decode($pdf->getBase64());
 
-            $filerecord = helper::get_pdf_filerecord($url, $this->get_name());
-            $fs = get_file_storage();
-            $existingfile = $fs->get_file(...array_values($filerecord));
-
-            // If the file already exists, it needs to be deleted, as otherwise the new filename will collide
-            // with existing filename and the new file will not be able to be created.
-            if (!empty($existingfile)) {
-                $existingfile->delete();
+            if (empty($filename)) {
+                $filename = helper::get_moodle_url_pdf_filename($url);
             }
 
-            $content = base64_decode($pdf->getBase64());
-            $fs->create_file_from_string($filerecord, $content);
-            $file = $fs->get_file(...array_values($filerecord));
-
-            return $file;
+            return $this->create_pdf_file($content, $filename);
 
         } catch (\Exception $exception) {
             throw new \moodle_exception('error:urltopdf', 'tool_pdfpages', '', null, $exception->getMessage());

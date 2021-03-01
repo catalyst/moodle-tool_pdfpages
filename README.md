@@ -42,19 +42,21 @@ Use of the converter requires programmatic access, there in no frontend associat
 ```php
 $converter = converter_factory::get_converter('chromium');
 ```
-- Pass a Moodle URL instance into the converter to create the PDF file and return a `\stored_file` instance for that file:
+- Pass a Moodle URL instance into the converter along with the desired filename to create the PDF file and return a `\stored_file` instance for that file:
 ```php
 $url = new \moodle_url('course/view.php', ['id' => 1337]);
-$file = $converter->convert_moodle_url_to_pdf($url);
+$file = $converter->convert_moodle_url_to_pdf($url, 'course1337.pdf');
 ```
+__Note__: You can omit the `$filename` param and instead, a SHA1 hash of the URL will be used as the filename, with the `.pdf` extension concatenated to the end.
 - If you want to see the PDF rendered in the browser, send it to the browser:
 ```php
 send_file($file, $file->get_filename());
 ```
 - To fetch a previously created PDF for a URL by a converter (if no conversion record exists for the URL in question, `false` will be returned):
 ```php
-$file = $converter->get_converted_moodle_url_pdf($url);
+$file = $converter->get_converted_moodle_url_pdf('course1337.pdf');
 ```
+__Note__: if you didn't specify a filename when converting, you can obtain the filename using the helper function `helper::get_moodle_url_pdf_filename($url)` passing in the Moodle URL.
 
 ## License
 
