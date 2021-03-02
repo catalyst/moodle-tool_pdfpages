@@ -6,8 +6,6 @@ addons:
 notifications:
   email: none
 
-sudo: false
-
 cache:
   directories:
     - $HOME/.composer/cache
@@ -20,7 +18,7 @@ php:
 env:
   global:
     - DB=pgsql
-  matrix:
+  jobs:
     - MOODLE_BRANCH=MOODLE_39_STABLE
     - MOODLE_BRANCH=master
 
