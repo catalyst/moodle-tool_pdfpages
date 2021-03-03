@@ -50,8 +50,10 @@ abstract class converter {
      * target URL, the created PDF will most likely be an error page.
      *
      * @param \moodle_url $url the target URL to convert.
+     * @param string $key access key to use for user validation, this is required to login user and allow access of target page
+     * for conversion {@see \tool_pdfpages\helper::create_user_key}.
      * @param string $filename the name to give converted file.
-     * (if none is specified, use {@see helper::get_moodle_url_pdf_filename})
+     * (if none is specified, use {@see \tool_pdfpages\helper::get_moodle_url_pdf_filename})
      * @param array $options any additional options to pass to converter, valid options vary with converter
      * instance, see relevant converter for further details.
      * @param string $cookiename cookie name to apply to conversion (optional).
@@ -59,9 +61,12 @@ abstract class converter {
      *
      * @return \stored_file the stored file created during conversion.
      */
-    public function convert_moodle_url_to_pdf(moodle_url $url, string $filename = '', array $options = [],
-                                              string $cookiename = '', string $cookievalue = ''): \stored_file {
+    public function convert_moodle_url_to_pdf(moodle_url $url, string $key, string $filename = '', array $options = [],
+                                              string $cookiename = '', string $cookievalu = ''): \stored_file {
         // Implement converter specific logic for URL PDF extraction here.
+        // When implemented, the target URL must be passed through the proxy page (index.php) as a parameter
+        // along with the access key, in order to validate user login.
+        // {@see \tool_pdfpages\helper::get_proxy_url}
     }
 
     /**

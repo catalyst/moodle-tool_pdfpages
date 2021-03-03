@@ -38,6 +38,59 @@ defined('MOODLE_INTERNAL') || die();
 class tool_pdfpages_helper_test extends advanced_testcase {
 
     /**
+     * Test that user keys are created correctly.
+     */
+    public function test_create_user_key() {
+        $this->resetAfterTest();
+
+        set_config('accesskeyttl', 60, 'tool_pdfpages');
+
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        $actual = helper::create_user_key();
+
+        $key = validate_user_key($actual, 'tool/pdfpages', null);
+        $this->assertEquals('tool/pdfpages', $key->script);
+        $this->assertEquals($user->id, $key->userid);
+
+        $this->setUser();
+        $this->expectException(coding_exception::class);
+        $this->expectExceptionMessage('Cannot create a user key when not logged in as a user.');
+        helper::create_user_key();
+    }
+
+    /**
+     * Test that IP restrictions applied to access keys function correctly.
+     */
+    public function test_create_user_key_iprestriction() {
+        $this->resetAfterTest();
+
+        set_config('accesskeyttl', 60, 'tool_pdfpages');
+
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        $actual = helper::create_user_key('123.121.234.0/30');
+
+        // Spoof server remote address matching CIDR IP restriction.
+        $_SERVER['REMOTE_ADDR'] = '123.121.234.1';
+
+        // Should only validate if current remote address is within the specified IP restriction range.
+        $key = validate_user_key($actual, 'tool/pdfpages', null);
+        $this->assertEquals('tool/pdfpages', $key->script);
+        $this->assertEquals($user->id, $key->userid);
+        $this->assertEquals('123.121.234.0/30', $key->iprestriction);
+
+        // Spoof server remote address not matching CIDR IP restriction.
+        $_SERVER['REMOTE_ADDR'] = '123.121.234.4';
+
+        $this->expectException(moodle_exception::class);
+        $this->expectExceptionMessage('Client IP address mismatch');
+        validate_user_key($actual, 'tool/pdfpages', null);
+    }
+
+    /**
      * Test getting a plugin setting value.
      */
     public function test_get_config() {
@@ -109,5 +162,24 @@ class tool_pdfpages_helper_test extends advanced_testcase {
 
         unset_config('wkhtmltopdfpath', 'tool_pdfpages');
         $this->assertFalse(helper::is_converter_enabled('wkhtmltopdf'));
+    }
+
+    /**
+     * Test that proxy URL is built correctly.
+     */
+    public function test_get_proxy_url() {
+        $this->resetAfterTest();
+
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+
+        $url = new moodle_url("/course/view.php?id={$course->id}");
+        $key = helper::create_user_key();
+
+        $actual = helper::get_proxy_url($url, $key);
+        $this->assertInstanceOf(moodle_url::class, $actual);
+        $this->assertEquals($url->out(), $actual->get_param('url'));
+        $this->assertEquals($key, $actual->get_param('key'));
     }
 }

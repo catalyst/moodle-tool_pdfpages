@@ -15,7 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details.
+ * Proxy for PDF page conversion.
+ *
+ * This uses an access key to avoid having to conduct a full headless browser login for page
+ * conversion and then redirects to the page in question, if the current user doesn't have
+ * access to the page, the converted PDF will likely be the login page.
  *
  * @package    tool_pdfpages
  * @author     Tom Dickman <tomdickman@catalyst-au.net>
@@ -23,9 +27,21 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+define('NO_MOODLE_COOKIES', true); // No need for a session here.
 
-$plugin->version   = 2021030401;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2020061504;        // Requires this Moodle version.
-$plugin->component = 'tool_pdfpages';  // Full name of the plugin (used for diagnostics).
-$plugin->maturity = MATURITY_BETA;
+require_once(__DIR__ . '/../../../config.php');
+
+global $CFG;
+
+$targeturl = required_param('url', PARAM_URL);
+$key = required_param('key', PARAM_ALPHANUM);
+
+$url = new moodle_url($targeturl);
+
+require_user_key_login('tool/pdfpages');
+
+foreach ($url->params() as $param => $value) {
+    $_GET[$param] = $value;
+}
+
+include($CFG->dirroot . $url->get_path());

@@ -194,6 +194,8 @@ class converter_wkhtmltopdf extends converter {
      * target URL, the created PDF will most likely be an error page.
      *
      * @param \moodle_url $url the target URL to convert.
+     * @param string $key access key to use for user validation, this is required to login user and allow access of target page
+     * for conversion {@see \tool_pdfpages\helper::create_user_key}.
      * @param string $filename the name to give converted file.
      * @param array $options any options to be used {@see converter_wkhtmltopdf::VALID_OPTIONS}
      * @param string $cookiename cookie name to apply to conversion (optional).
@@ -202,7 +204,7 @@ class converter_wkhtmltopdf extends converter {
      * @return \stored_file the stored file created during conversion.
      * @throws \moodle_exception if conversion fails.
      */
-    public function convert_moodle_url_to_pdf(moodle_url $url, string $filename = '', array $options = [],
+    public function convert_moodle_url_to_pdf(moodle_url $url, string $key, string $filename = '', array $options = [],
                                               string $cookiename = '', string $cookievalue = ''): \stored_file {
         try {
             // Close the session to prevent current session from blocking wkthmltopdf headless browser
@@ -216,7 +218,9 @@ class converter_wkhtmltopdf extends converter {
                 $pdf->setOption('cookie', [$cookiename => $cookievalue]);
             }
 
-            $content = $pdf->getOutput($url->out(false));
+            // Pass through proxy for user login validation.
+            $proxyurl = helper::get_proxy_url($url, $key);
+            $content = $pdf->getOutput($proxyurl->out(false));
 
             if (empty($filename)) {
                 $filename = helper::get_moodle_url_pdf_filename($url);

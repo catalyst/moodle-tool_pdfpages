@@ -59,6 +59,31 @@ class helper {
     const CONVERTERS = ['chromium', 'wkhtmltopdf'];
 
     /**
+     * Create a user key for PDF pages.
+     *
+     * @param string $iprestriction optional IP range to restrict access to.
+     *
+     * @return string the created user key value.
+     */
+    public static function create_user_key(string $iprestriction = '') : string {
+        global $USER;
+
+        if (empty($USER->id)) {
+            throw new \coding_exception('Cannot create a user key when not logged in as a user.');
+        }
+
+        $iprestriction = !empty($iprestriction) ? $iprestriction : null;
+
+        // Tidy up old keys.
+        delete_user_key('tool/pdfpages', $USER->id);
+
+        $ttl = get_config('tool_pdfpages', 'accesskeyttl');
+        $expirationtime = !empty($ttl) ? (time() + $ttl) : (time() + MINSECS);
+
+        return create_user_key('tool/pdfpages', $USER->id, null, $iprestriction, $expirationtime);
+    }
+
+    /**
      * Get a tool_pdfpages plugin setting.
      *
      * @param string $pluginsetting the plugin setting to get value for.
@@ -123,6 +148,18 @@ class helper {
             'filepath' => "/$converter/",
             'filename' => $filename,
         ];
+    }
+
+    /**
+     * Get the proxy URL for converting a target URL.
+     *
+     * @param \moodle_url $targeturl the target URL to reach after passing through proxy.
+     * @param string $key the access key to use for Moodle user login validation.
+     *
+     * @return \moodle_url
+     */
+    public static function get_proxy_url(moodle_url $targeturl, string $key) {
+        return new moodle_url('/admin/tool/pdfpages/index.php', ['url' => $targeturl->out(), 'key' => $key]);
     }
 
     /**

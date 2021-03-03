@@ -75,6 +75,8 @@ class converter_chromium extends converter {
      * target URL, the created PDF will most likely be an error page.
      *
      * @param \moodle_url $url the target URL to convert.
+     * @param string $key access key to use for user validation, this is required to login user and allow access of target page
+     * for conversion {@see \tool_pdfpages\helper::create_user_key}.
      * @param string $filename the name to give converted file.
      * @param array $options any options to be used {@see converter_chromium::VALID_OPTIONS}
      * @param string $cookiename cookie name to apply to conversion (optional).
@@ -83,15 +85,11 @@ class converter_chromium extends converter {
      * @return \stored_file the stored file created during conversion.
      * @throws \moodle_exception if conversion fails.
      */
-    public function convert_moodle_url_to_pdf(moodle_url $url, string $filename = '', array $options = [],
+    public function convert_moodle_url_to_pdf(moodle_url $url, string $key, string $filename = '', array $options = [],
                                               string $cookiename = '', string $cookievalue = ''): \stored_file {
         $this->validate_options($options);
 
         try {
-            // Close the session to prevent current session from blocking chromium headless browser
-            // session which, causes a timeout and failed conversion.
-            \core\session\manager::write_close();
-
             $browserfactory = new BrowserFactory(helper::get_config($this->get_name() . 'path'));
             $browser = $browserfactory->createBrowser([
                 'headless' => true,
@@ -108,7 +106,9 @@ class converter_chromium extends converter {
                 ])->await();
             }
 
-            $page->navigate($url->out(false))->waitForNavigation();
+            // Pass through proxy for user login validation.
+            $proxyurl = helper::get_proxy_url($url, $key);
+            $page->navigate($proxyurl->out(false))->waitForNavigation();
             $pdf = $page->pdf($options);
             $content = base64_decode($pdf->getBase64());
 
