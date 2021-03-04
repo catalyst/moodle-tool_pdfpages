@@ -44,4 +44,4 @@ foreach ($url->params() as $param => $value) {
     $_GET[$param] = $value;
 }
 
-include($CFG->dirroot . $url->get_path());
+require($CFG->dirroot . $url->get_path());

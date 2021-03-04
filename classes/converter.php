@@ -62,11 +62,11 @@ abstract class converter {
      * @return \stored_file the stored file created during conversion.
      */
     public function convert_moodle_url_to_pdf(moodle_url $url, string $key, string $filename = '', array $options = [],
-                                              string $cookiename = '', string $cookievalu = ''): \stored_file {
+                                              string $cookiename = '', string $cookievalue = ''): \stored_file {
         // Implement converter specific logic for URL PDF extraction here.
         // When implemented, the target URL must be passed through the proxy page (index.php) as a parameter
         // along with the access key, in order to validate user login.
-        // {@see \tool_pdfpages\helper::get_proxy_url}
+        // {@see \tool_pdfpages\helper::get_proxy_url}.
     }
 
     /**
