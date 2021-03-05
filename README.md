@@ -1,7 +1,9 @@
 ![Build Status](https://travis-ci.org/catalyst/moodle-tool_pdfpages.svg?branch=VERSION1)
 
 # PDF pages
-Download Moodle internal webpages as PDFs.
+An API to assist in downloading Moodle internal webpages as PDFs into the Moodle file system using a headless browser.
+
+This plugin will not work by itself without further development work and is instead intended to be leveraged as an API by other Moodle plugins, to download PDFs of Moodle web pages as they appear in browser print engines.
 
 1. [Installation](#installation)
 2. [Requirements](#requirements)
