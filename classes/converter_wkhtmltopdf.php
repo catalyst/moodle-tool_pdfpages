@@ -230,6 +230,9 @@ class converter_wkhtmltopdf extends converter {
 
         } catch (\Exception $exception) {
             throw new \moodle_exception('error:urltopdf', 'tool_pdfpages', '', null, $exception->getMessage());
+        } finally {
+            // Destroy the session to prevent token login session hijacking.
+            $this->destroy_session();
         }
     }
 

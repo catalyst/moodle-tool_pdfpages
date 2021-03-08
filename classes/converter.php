@@ -67,6 +67,10 @@ abstract class converter {
         // When implemented, the target URL must be passed through the proxy page (index.php) as a parameter
         // along with the access key, in order to validate user login.
         // {@see \tool_pdfpages\helper::get_proxy_url}.
+
+        // All converters MUST implement `destroy session` following conversion, in order to prevent improper use
+        // of the session for further actions.
+        $this->destroy_session();
     }
 
     /**
@@ -90,6 +94,13 @@ abstract class converter {
         }
 
         return $fs->create_file_from_string($filerecord, $content);
+    }
+
+    /**
+     * Destroy the current session.
+     */
+    protected function destroy_session(): void {
+        \core\session\manager::terminate_current();
     }
 
     /**

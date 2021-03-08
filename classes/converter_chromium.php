@@ -125,6 +125,9 @@ class converter_chromium extends converter {
             if (!empty($browser) && $browser instanceof Browser) {
                 $browser->close();
             }
+
+            // Destroy the session to prevent token login session hijacking.
+            $this->destroy_session();
         }
     }
 
