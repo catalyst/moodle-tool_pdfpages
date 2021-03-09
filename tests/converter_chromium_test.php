@@ -24,7 +24,6 @@
  */
 
 use tool_pdfpages\converter_chromium;
-use tool_pdfpages\helper;
 
 defined('MOODLE_INTERNAL') || die();
 
