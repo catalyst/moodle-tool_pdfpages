@@ -201,6 +201,8 @@ class converter_wkhtmltopdf extends converter {
      */
     protected function generate_pdf_content(moodle_url $proxyurl, string $filename = '', array $options = [],
                                               string $cookiename = '', string $cookievalue = ''): string {
+        $this->validate_options($options);
+
         $pdf = new Pdf(helper::get_config($this->get_name() . 'path'));
         $pdf->setOptions($options);
 
