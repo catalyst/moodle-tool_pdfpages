@@ -48,8 +48,7 @@ abstract class converter {
     /**
      * Generate the PDF content of a target URL passed through proxy URL.
      *
-     * @param \moodle_url $proxyurl the plugin proxy url for access key login and redirection to target URL
-     * {@link /admin/tool/pages/index.php}.
+     * @param \moodle_url $proxyurl the plugin proxy url for access key login and redirection to target URL.
      * @param string $filename the name to give converted file.
      * @param array $options any additional options to pass to converter, valid options vary with converter
      * instance, see relevant converter for further details.
