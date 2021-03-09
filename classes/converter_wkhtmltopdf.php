@@ -188,52 +188,28 @@ class converter_wkhtmltopdf extends converter {
     ];
 
     /**
-     * Convert a moodle URL to PDF and store in file system.
+     * Generate the PDF content of a target URL passed through proxy URL.
      *
-     * Note: If the currently logged in user does not have the correct capabilities to view the
-     * target URL, the created PDF will most likely be an error page.
-     *
-     * @param \moodle_url $url the target URL to convert.
-     * @param string $key access key to use for user validation, this is required to login user and allow access of target page
-     * for conversion {@see \tool_pdfpages\helper::create_user_key}.
+     * @param \moodle_url $proxyurl the plugin proxy url for access key login and redirection to target URL
+     * {@link /admin/tool/pages/index.php}.
      * @param string $filename the name to give converted file.
-     * @param array $options any options to be used {@see converter_wkhtmltopdf::VALID_OPTIONS}
+     * @param array $options any additional options to pass to converter, valid options vary with converter
+     * instance, see relevant converter for further details.
      * @param string $cookiename cookie name to apply to conversion (optional).
      * @param string $cookievalue cookie value to apply to conversion (optional).
      *
-     * @return \stored_file the stored file created during conversion.
-     * @throws \moodle_exception if conversion fails.
+     * @return string raw PDF content of URL.
      */
-    public function convert_moodle_url_to_pdf(moodle_url $url, string $key, string $filename = '', array $options = [],
-                                              string $cookiename = '', string $cookievalue = ''): \stored_file {
-        try {
-            // Close the session to prevent current session from blocking wkthmltopdf headless browser
-            // session which, causes a timeout and failed conversion.
-            \core\session\manager::write_close();
+    protected function generate_pdf_content(moodle_url $proxyurl, string $filename = '', array $options = [],
+                                              string $cookiename = '', string $cookievalue = ''): string {
+        $pdf = new Pdf(helper::get_config($this->get_name() . 'path'));
+        $pdf->setOptions($options);
 
-            $pdf = new Pdf(helper::get_config($this->get_name() . 'path'));
-            $pdf->setOptions($options);
-
-            if (!empty($cookiename) && !empty($cookievalue)) {
-                $pdf->setOption('cookie', [$cookiename => $cookievalue]);
-            }
-
-            // Pass through proxy for user login validation.
-            $proxyurl = helper::get_proxy_url($url, $key);
-            $content = $pdf->getOutput($proxyurl->out(false));
-
-            if (empty($filename)) {
-                $filename = helper::get_moodle_url_pdf_filename($url);
-            }
-
-            return $this->create_pdf_file($content, $filename);
-
-        } catch (\Exception $exception) {
-            throw new \moodle_exception('error:urltopdf', 'tool_pdfpages', '', null, $exception->getMessage());
-        } finally {
-            // Destroy the session to prevent token login session hijacking.
-            $this->destroy_session();
+        if (!empty($cookiename) && !empty($cookievalue)) {
+            $pdf->setOption('cookie', [$cookiename => $cookievalue]);
         }
+
+        return $pdf->getOutput($proxyurl->out(false));
     }
 
     /**

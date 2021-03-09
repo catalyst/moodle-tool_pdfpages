@@ -25,6 +25,7 @@
 
 namespace tool_pdfpages;
 
+use Matrix\Exception;
 use moodle_url;
 
 defined('MOODLE_INTERNAL') || die();
@@ -45,6 +46,26 @@ abstract class converter {
     protected const NAME = 'base';
 
     /**
+     * Generate the PDF content of a target URL passed through proxy URL.
+     *
+     * @param \moodle_url $proxyurl the plugin proxy url for access key login and redirection to target URL
+     * {@link /admin/tool/pages/index.php}.
+     * @param string $filename the name to give converted file.
+     * @param array $options any additional options to pass to converter, valid options vary with converter
+     * instance, see relevant converter for further details.
+     * @param string $cookiename cookie name to apply to conversion (optional).
+     * @param string $cookievalue cookie value to apply to conversion (optional).
+     *
+     * @return string raw PDF content of URL.
+     */
+    protected function generate_pdf_content(moodle_url $proxyurl, string $filename = '', array $options = [],
+                               string $cookiename = '', string $cookievalue = ''): string {
+        // Implement converter specific logic for URL PDF extraction here.
+        // The HTTP/HTTPS client used in conversion must support redirection and redirection must be implemented,
+        // otherwise the proxy pass-through will not work.
+    }
+
+    /**
      * Convert a moodle URL to PDF and store in file system.
      * Note: If the currently logged in user does not have the correct capabilities to view the
      * target URL, the created PDF will most likely be an error page.
@@ -53,7 +74,7 @@ abstract class converter {
      * @param string $key access key to use for user validation, this is required to login user and allow access of target page
      * for conversion {@see \tool_pdfpages\helper::create_user_key}.
      * @param string $filename the name to give converted file.
-     * (if none is specified, use {@see \tool_pdfpages\helper::get_moodle_url_pdf_filename})
+     * (if none is specified, filename will be generated {@see \tool_pdfpages\helper::get_moodle_url_pdf_filename})
      * @param array $options any additional options to pass to converter, valid options vary with converter
      * instance, see relevant converter for further details.
      * @param string $cookiename cookie name to apply to conversion (optional).
@@ -61,16 +82,21 @@ abstract class converter {
      *
      * @return \stored_file the stored file created during conversion.
      */
-    public function convert_moodle_url_to_pdf(moodle_url $url, string $key, string $filename = '', array $options = [],
+    final public function convert_moodle_url_to_pdf(moodle_url $url, string $key, string $filename = '', array $options = [],
                                               string $cookiename = '', string $cookievalue = ''): \stored_file {
-        // Implement converter specific logic for URL PDF extraction here.
-        // When implemented, the target URL must be passed through the proxy page (index.php) as a parameter
-        // along with the access key, in order to validate user login.
-        // {@see \tool_pdfpages\helper::get_proxy_url}.
 
-        // All converters MUST implement `destroy session` following conversion, in order to prevent improper use
-        // of the session for further actions.
-        $this->destroy_session();
+        try {
+            $proxyurl = helper::get_proxy_url($url, $key);
+            $filename = ($filename === '') ? helper::get_moodle_url_pdf_filename($url) : $filename;
+            $content = $this->generate_pdf_content($proxyurl, $filename, $options, $cookiename, $cookievalue);
+
+            return $this->create_pdf_file($content, $filename);
+        } catch (\Exception $exception) {
+            throw new \moodle_exception('error:urltopdf', 'tool_pdfpages', '', null, $exception->getMessage());
+        } finally {
+            // Make sure the access key token session cannot be used for any other requests, prevent session hijacking.
+            \core\session\manager::terminate_current();
+        }
     }
 
     /**
@@ -94,13 +120,6 @@ abstract class converter {
         }
 
         return $fs->create_file_from_string($filerecord, $content);
-    }
-
-    /**
-     * Destroy the current session.
-     */
-    protected function destroy_session(): void {
-        \core\session\manager::terminate_current();
     }
 
     /**

@@ -70,23 +70,20 @@ class converter_chromium extends converter {
     ];
 
     /**
-     * Convert a moodle URL to PDF and store in file system.
-     * Note: If the currently logged in user does not have the correct capabilities to view the
-     * target URL, the created PDF will most likely be an error page.
+     * Generate the PDF content of a target URL passed through proxy URL.
      *
-     * @param \moodle_url $url the target URL to convert.
-     * @param string $key access key to use for user validation, this is required to login user and allow access of target page
-     * for conversion {@see \tool_pdfpages\helper::create_user_key}.
+     * @param \moodle_url $proxyurl the plugin proxy url for access key login and redirection to target URL
+     * {@link /admin/tool/pages/index.php}.
      * @param string $filename the name to give converted file.
-     * @param array $options any options to be used {@see converter_chromium::VALID_OPTIONS}
+     * @param array $options any additional options to pass to converter, valid options vary with converter
+     * instance, see relevant converter for further details.
      * @param string $cookiename cookie name to apply to conversion (optional).
      * @param string $cookievalue cookie value to apply to conversion (optional).
      *
-     * @return \stored_file the stored file created during conversion.
-     * @throws \moodle_exception if conversion fails.
+     * @return string raw PDF content of URL.
      */
-    public function convert_moodle_url_to_pdf(moodle_url $url, string $key, string $filename = '', array $options = [],
-                                              string $cookiename = '', string $cookievalue = ''): \stored_file {
+    protected function generate_pdf_content(moodle_url $proxyurl, string $filename = '', array $options = [],
+                                              string $cookiename = '', string $cookievalue = ''): string {
         $this->validate_options($options);
 
         try {
@@ -100,34 +97,21 @@ class converter_chromium extends converter {
             if (!empty($cookiename) && !empty($cookievalue)) {
                 $page->setCookies([
                     Cookie::create($cookiename, $cookievalue, [
-                        'domain' => $url->get_host(),
+                        'domain' => urldecode($proxyurl->get_param('url')),
                         'expires' => time() + DAYSECS
                     ])
                 ])->await();
             }
 
-            // Pass through proxy for user login validation.
-            $proxyurl = helper::get_proxy_url($url, $key);
             $page->navigate($proxyurl->out(false))->waitForNavigation();
             $pdf = $page->pdf($options);
-            $content = base64_decode($pdf->getBase64());
 
-            if (empty($filename)) {
-                $filename = helper::get_moodle_url_pdf_filename($url);
-            }
-
-            return $this->create_pdf_file($content, $filename);
-
-        } catch (\Exception $exception) {
-            throw new \moodle_exception('error:urltopdf', 'tool_pdfpages', '', null, $exception->getMessage());
+            return base64_decode($pdf->getBase64());
         } finally {
             // Always close the browser instance to ensure that chromium process is stopped.
             if (!empty($browser) && $browser instanceof Browser) {
                 $browser->close();
             }
-
-            // Destroy the session to prevent token login session hijacking.
-            $this->destroy_session();
         }
     }
 
