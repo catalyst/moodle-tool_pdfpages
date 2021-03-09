@@ -25,7 +25,6 @@
 
 namespace tool_pdfpages;
 
-use Matrix\Exception;
 use moodle_url;
 
 defined('MOODLE_INTERNAL') || die();
@@ -57,12 +56,8 @@ abstract class converter {
      *
      * @return string raw PDF content of URL.
      */
-    protected function generate_pdf_content(moodle_url $proxyurl, string $filename = '', array $options = [],
-                               string $cookiename = '', string $cookievalue = ''): string {
-        // Implement converter specific logic for URL PDF extraction here.
-        // The HTTP/HTTPS client used in conversion must support redirection and redirection must be implemented,
-        // otherwise the proxy pass-through will not work.
-    }
+    abstract protected function generate_pdf_content(moodle_url $proxyurl, string $filename = '', array $options = [],
+                               string $cookiename = '', string $cookievalue = ''): string;
 
     /**
      * Convert a moodle URL to PDF and store in file system.
