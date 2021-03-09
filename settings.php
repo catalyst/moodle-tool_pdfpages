@@ -33,15 +33,15 @@ if (!empty($hassiteconfig)) {
     $settings->add(new admin_setting_heading('tool_pdfpages/converters',
         get_string('settings:convertersheading', 'tool_pdfpages'), ''));
 
-    $settings->add(new admin_setting_configtext('tool_pdfpages/wkhtmltopdfpath',
+    $settings->add(new admin_setting_configexecutable('tool_pdfpages/wkhtmltopdfpath',
         get_string('settings:wkhtmltopdfpath', 'tool_pdfpages'),
         get_string('settings:wkhtmltopdfpath_desc', 'tool_pdfpages'),
-        '', PARAM_PATH));
+        ''));
 
-    $settings->add(new admin_setting_configtext('tool_pdfpages/chromiumpath',
+    $settings->add(new admin_setting_configexecutable('tool_pdfpages/chromiumpath',
         get_string('settings:chromiumpath', 'tool_pdfpages'),
         get_string('settings:chromiumpath_desc', 'tool_pdfpages'),
-        '', PARAM_PATH));
+        ''));
 
     $settings->add(new admin_setting_heading('tool_pdfpages/accesskey',
         get_string('settings:accesskeyheading', 'tool_pdfpages'), ''));
