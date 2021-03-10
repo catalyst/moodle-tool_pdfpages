@@ -182,4 +182,40 @@ class tool_pdfpages_helper_test extends advanced_testcase {
         $this->assertEquals($url->out(), $actual->get_param('url'));
         $this->assertEquals($key, $actual->get_param('key'));
     }
+
+    /**
+     * Test that user session is correctly created with a key login.
+     */
+    public function test_login_with_key() {
+        global $DB, $USER;
+
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        $key = helper::create_user_key();
+
+        // Check that the key record exists and is for the correct user.
+        $record = $DB->get_record('user_private_key', ['script' => 'tool/pdfpages', 'value' => $key]);
+        $this->assertEquals($user->id, $record->userid);
+
+        // Emulate using new browser without an existing session or login.
+        \core\session\manager::kill_all_sessions();
+        $this->setUser();
+
+        helper::login_with_key($key);
+
+        // Login with key should correctly set up session and log in user.
+        $this->assertEquals($user->id, $USER->id);
+        $this->assertEquals($user->id, $_SESSION['USER']->id);
+
+        // Create a fake key.
+        $key = md5($user->id . '_' . time() . random_string(40));
+
+        // Invalid key should not allow login.
+        $this->expectException(moodle_exception::class);
+        $this->expectExceptionMessage('Incorrect key');
+        helper::login_with_key($key);
+    }
 }

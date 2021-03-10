@@ -27,21 +27,15 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define('NO_MOODLE_COOKIES', true); // No need for a session here.
+use tool_pdfpages\helper;
 
 require_once(__DIR__ . '/../../../config.php');
-
-global $CFG;
 
 $targeturl = required_param('url', PARAM_URL);
 $key = required_param('key', PARAM_ALPHANUM);
 
 $url = new moodle_url($targeturl);
 
-require_user_key_login('tool/pdfpages');
+helper::login_with_key($key);
 
-foreach ($url->params() as $param => $value) {
-    $_GET[$param] = $value;
-}
-
-require($CFG->dirroot . $url->get_path());
+redirect($url);
