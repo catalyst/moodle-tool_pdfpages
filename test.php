@@ -28,6 +28,7 @@ require_once(__DIR__ . '/../../../config.php');
 require_admin();
 
 $rawurl = required_param('url', PARAM_URL);
+$converter = optional_param('converter', '', PARAM_ALPHA);
 $filename = optional_param('filename', '', PARAM_FILE);
 // Pass in any options as a JSON encoded string.
 $options = optional_param('options', '{}', PARAM_RAW);
@@ -35,7 +36,7 @@ $options = optional_param('options', '{}', PARAM_RAW);
 $options = json_decode($options, true);
 
 $url = new moodle_url($rawurl);
-$converter = \tool_pdfpages\converter_factory::get_converter();
+$converter = \tool_pdfpages\converter_factory::get_converter($converter);
 
 $key = \tool_pdfpages\helper::create_user_key();
 
