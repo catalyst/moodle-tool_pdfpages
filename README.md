@@ -73,10 +73,13 @@ In order to test how a URL will be converted and see the outcome, you can utilis
 This will utilise the configured converter on the server side to carry out the conversion, creating the converted file in the Moodle file system and then serve up the PDF to the browser.
 
 This page takes the following query parameters:
-- url: (required) the ASCII encoded target URL
+- url: (required) the ASCII encoded target URL (may be absolute URL or relative Moodle URL)
 - converter: (optional) the converter name to use
 - filename: (optional) the filename to give the converted PDF
 - options: (optional) a JSON encoded string of converter options (see the relevant converter's docs for more information)
+
+For example:
+https://mymoodle.com/admin/tool/pdfpages/test.php?url=%2Fcourse%2Fview.php%3Fid%3D2&converter=chromium&filename=test.pdf&options={"landscape":true}
 
 This allows you to test any conversion candidates and see how well they translate into a PDF or whether alterations might need to be made, such as CSS changes to the page.
 
