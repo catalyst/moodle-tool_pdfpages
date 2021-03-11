@@ -8,7 +8,8 @@ This plugin will not work by itself without further development work and is inst
 1. [Installation](#installation)
 2. [Requirements](#requirements)
 3. [Usage](#usage)
-4. [License](#license)
+4. [Testing Conversion](#testing-conversion)
+5. [License](#license)
 
 ## Requirements
 
@@ -65,6 +66,19 @@ send_file($file, $file->get_filename());
 $file = $converter->get_converted_moodle_url_pdf('course1337.pdf');
 ```
 __Note__: if you didn't specify a filename when converting, you can obtain the filename using the helper function `helper::get_moodle_url_pdf_filename($url)` passing in the Moodle URL.
+
+## Testing Conversion
+
+In order to test how a URL will be converted and see the outcome, you can utilise the `/admin/tool/pdfpages/test.php` page in your browser.
+This will utilise the configured converter on the server side to carry out the conversion, creating the converted file in the Moodle file system and then serve up the PDF to the browser.
+
+This page takes the following query parameters:
+- url: (required) the ASCII encoded target URL
+- converter: (optional) the converter name to use
+- filename: (optional) the filename to give the converted PDF
+- options: (optional) a JSON encoded string of converter options (see the relevant converter's docs for more information)
+
+This allows you to test any conversion candidates and see how well they translate into a PDF or whether alterations might need to be made, such as CSS changes to the page.
 
 ## License
 
