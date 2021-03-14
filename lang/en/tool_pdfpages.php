@@ -26,9 +26,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'PDF Pages';
-$string['error:invalidpageoption'] = 'The PDF page option you selected is not supported: {$a}';
 $string['error:converternotfound'] = 'Could not find enabled converter, please check tool_pages plugin settings.';
-$string['error:wkhtmltopdfpath'] = 'Cannot establish path to wkhtmltopdf, please check setting tool_pdfpages|wkhtmltopdfpath.';
+$string['error:invalidpageoption'] = 'The PDF page option you selected is not supported: {$a}';
+$string['error:permissions:createkey'] = "User doesn't have required capability to create access keys.";
 $string['error:urltopdf'] = 'URL to PDF conversion could not be completed.';
 $string['settings:accesskeyheading'] = 'Access key settings';
 $string['settings:accesskeyttl'] = 'TTL (Time To Live)';

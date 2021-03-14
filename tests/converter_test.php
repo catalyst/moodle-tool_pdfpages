@@ -49,6 +49,11 @@ class converter_test extends advanced_testcase {
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
 
+        // Assign the user a role with the capability to create keys.
+        $roleid = $this->getDataGenerator()->create_role();
+        assign_capability('tool/pdfpages:createaccesskey', CAP_ALLOW, $roleid, context_system::instance());
+        $this->getDataGenerator()->role_assign($roleid, $user->id);
+
         // Create the key and log user in with access key.
         $key = helper::create_user_key();
         helper::login_with_key($key);

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details.
+ * Define tool_pdfpages capabilities.
  *
  * @package    tool_pdfpages
  * @author     Tom Dickman <tomdickman@catalyst-au.net>
@@ -25,7 +25,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2021031501;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2020061504;        // Requires this Moodle version.
-$plugin->component = 'tool_pdfpages';  // Full name of the plugin (used for diagnostics).
-$plugin->maturity = MATURITY_BETA;
+$capabilities = [
+    'tool/pdfpages:createaccesskey' => [
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [],
+    ],
+];

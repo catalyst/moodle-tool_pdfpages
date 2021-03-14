@@ -46,6 +46,12 @@ class tool_pdfpages_helper_test extends advanced_testcase {
         set_config('accesskeyttl', 60, 'tool_pdfpages');
 
         $user = $this->getDataGenerator()->create_user();
+
+        // Assign the user a role with the capability to create keys.
+        $roleid = $this->getDataGenerator()->create_role();
+        assign_capability('tool/pdfpages:createaccesskey', CAP_ALLOW, $roleid, context_system::instance());
+        $this->getDataGenerator()->role_assign($roleid, $user->id);
+
         $this->setUser($user);
 
         $actual = helper::create_user_key();
@@ -53,10 +59,22 @@ class tool_pdfpages_helper_test extends advanced_testcase {
         $key = validate_user_key($actual, 'tool/pdfpages', null);
         $this->assertEquals('tool/pdfpages', $key->script);
         $this->assertEquals($user->id, $key->userid);
+    }
 
-        $this->setUser();
-        $this->expectException(coding_exception::class);
-        $this->expectExceptionMessage('Cannot create a user key when not logged in as a user.');
+    /**
+     * Test that key cannot be created if user doesn't have capability to create keys.
+     */
+    public function test_create_key_no_permission() {
+        $this->resetAfterTest();
+
+        set_config('accesskeyttl', 60, 'tool_pdfpages');
+
+        $user = $this->getDataGenerator()->create_user();
+
+        $this->setUser($user);
+
+        $this->expectException(moodle_exception::class);
+        $this->expectExceptionMessage("User doesn't have required capability to create access keys.");
         helper::create_user_key();
     }
 
@@ -70,6 +88,11 @@ class tool_pdfpages_helper_test extends advanced_testcase {
 
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
+
+        // Assign the user a role with the capability to create keys.
+        $roleid = $this->getDataGenerator()->create_role();
+        assign_capability('tool/pdfpages:createaccesskey', CAP_ALLOW, $roleid, context_system::instance());
+        $this->getDataGenerator()->role_assign($roleid, $user->id);
 
         $actual = helper::create_user_key('123.121.234.0/30');
 
@@ -193,6 +216,11 @@ class tool_pdfpages_helper_test extends advanced_testcase {
 
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
+
+        // Assign the user a role with the capability to create keys.
+        $roleid = $this->getDataGenerator()->create_role();
+        assign_capability('tool/pdfpages:createaccesskey', CAP_ALLOW, $roleid, context_system::instance());
+        $this->getDataGenerator()->role_assign($roleid, $user->id);
 
         $key = helper::create_user_key();
 
