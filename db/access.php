@@ -15,11 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Proxy for PDF page conversion.
- *
- * This uses an access key to avoid having to conduct a full headless browser login for page
- * conversion and then redirects to the page in question, if the current user doesn't have
- * access to the page, the converted PDF will likely be the login page.
+ * Define tool_pdfpages capabilities.
  *
  * @package    tool_pdfpages
  * @author     Tom Dickman <tomdickman@catalyst-au.net>
@@ -27,17 +23,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use tool_pdfpages\helper;
+defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__ . '/../../../config.php');
-
-$targeturl = required_param('url', PARAM_URL);
-$key = required_param('key', PARAM_ALPHANUM);
-
-$url = new moodle_url($targeturl);
-
-helper::login_with_key($key);
-
-require_capability('tool/pdfpages:generatepdf', \context_system::instance());
-
-redirect($url);
+$capabilities = [
+    'tool/pdfpages:generatepdf' => [
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [],
+    ],
+];

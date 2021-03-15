@@ -65,13 +65,12 @@ class helper {
      * @param string $iprestriction optional IP range to restrict access to.
      *
      * @return string the created user key value.
+     * @throws \moodle_exception if user doesn't have permission to create key.
      */
     public static function create_user_key(string $iprestriction = '') : string {
         global $USER;
 
-        if (empty($USER->id)) {
-            throw new \coding_exception('Cannot create a user key when not logged in as a user.');
-        }
+        require_capability('tool/pdfpages:generatepdf', \context_system::instance());
 
         $iprestriction = !empty($iprestriction) ? $iprestriction : null;
 
