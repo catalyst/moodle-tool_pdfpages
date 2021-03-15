@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = [
-    'tool/pdfpages:createaccesskey' => [
+    'tool/pdfpages:generatepdf' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [],

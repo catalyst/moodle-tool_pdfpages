@@ -47,9 +47,9 @@ class tool_pdfpages_helper_test extends advanced_testcase {
 
         $user = $this->getDataGenerator()->create_user();
 
-        // Assign the user a role with the capability to create keys.
+        // Assign the user a role with the capability to generate PDFs.
         $roleid = $this->getDataGenerator()->create_role();
-        assign_capability('tool/pdfpages:createaccesskey', CAP_ALLOW, $roleid, context_system::instance());
+        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
         $this->getDataGenerator()->role_assign($roleid, $user->id);
 
         $this->setUser($user);
@@ -74,7 +74,7 @@ class tool_pdfpages_helper_test extends advanced_testcase {
         $this->setUser($user);
 
         $this->expectException(moodle_exception::class);
-        $this->expectExceptionMessage("User doesn't have required capability to create access keys.");
+        $this->expectExceptionMessage('Sorry, but you do not currently have permissions to do that (Generate a PDF from a Moodle URL).');
         helper::create_user_key();
     }
 
@@ -89,9 +89,9 @@ class tool_pdfpages_helper_test extends advanced_testcase {
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
 
-        // Assign the user a role with the capability to create keys.
+        // Assign the user a role with the capability to generate PDFs.
         $roleid = $this->getDataGenerator()->create_role();
-        assign_capability('tool/pdfpages:createaccesskey', CAP_ALLOW, $roleid, context_system::instance());
+        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
         $this->getDataGenerator()->role_assign($roleid, $user->id);
 
         $actual = helper::create_user_key('123.121.234.0/30');
@@ -217,9 +217,9 @@ class tool_pdfpages_helper_test extends advanced_testcase {
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
 
-        // Assign the user a role with the capability to create keys.
+        // Assign the user a role with the capability to generate PDFs.
         $roleid = $this->getDataGenerator()->create_role();
-        assign_capability('tool/pdfpages:createaccesskey', CAP_ALLOW, $roleid, context_system::instance());
+        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
         $this->getDataGenerator()->role_assign($roleid, $user->id);
 
         $key = helper::create_user_key();

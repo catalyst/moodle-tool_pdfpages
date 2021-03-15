@@ -70,9 +70,7 @@ class helper {
     public static function create_user_key(string $iprestriction = '') : string {
         global $USER;
 
-        if (!has_capability('tool/pdfpages:createaccesskey', \context_system::instance())) {
-            throw new \moodle_exception('error:permissions:createkey', 'tool_pdfpages');
-        }
+        require_capability('tool/pdfpages:generatepdf', \context_system::instance());
 
         $iprestriction = !empty($iprestriction) ? $iprestriction : null;
 

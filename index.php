@@ -38,4 +38,6 @@ $url = new moodle_url($targeturl);
 
 helper::login_with_key($key);
 
+require_capability('tool/pdfpages:generatepdf', \context_system::instance());
+
 redirect($url);
