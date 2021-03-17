@@ -49,14 +49,10 @@ Use of the converter requires programmatic access, there in no frontend associat
 ```php
 $converter = converter_factory::get_converter('chromium');
 ```
-- For security reasons, a temporary user access key is required to allow for Moodle access by the converter to the target page, this can be created by:
-```php
-$key = \tool_pdfpages\helper::create_user_key();
-```
-- Pass a Moodle URL instance into the converter along with the access key and desired filename to create the PDF file and return a `\stored_file` instance for that file:
+- Pass a Moodle URL instance into the converter along with the desired filename to create the PDF file and return a `\stored_file` instance for that file:
 ```php
 $url = new \moodle_url('course/view.php', ['id' => 1337]);
-$file = $converter->convert_moodle_url_to_pdf($url, $key, 'course1337.pdf');
+$file = $converter->convert_moodle_url_to_pdf($url, 'course1337.pdf');
 ```
 __Note__: You can omit the `$filename` param and instead, a SHA1 hash of the URL will be used as the filename, with the `.pdf` extension concatenated to the end.
 - If you want to see the PDF rendered in the browser, send it to the browser:
