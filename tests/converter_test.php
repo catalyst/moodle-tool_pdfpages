@@ -54,10 +54,6 @@ class converter_test extends advanced_testcase {
         assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
         $this->getDataGenerator()->role_assign($roleid, $user->id);
 
-        // Create the key and log user in with access key.
-        $key = helper::create_user_key();
-        helper::login_with_key($key);
-
         // Check that session is created for logged in user before conversion.
         $this->assertEquals($user->id, $USER->id);
         $this->assertEquals($user->id, $_SESSION['USER']->id);
@@ -84,7 +80,7 @@ class converter_test extends advanced_testcase {
             ->willReturn($file);
 
         $url = new moodle_url('/');
-        $mock->convert_moodle_url_to_pdf($url, $key);
+        $mock->convert_moodle_url_to_pdf($url);
 
         // User session should be destroyed following conversion.
         $this->assertEquals(0, $USER->id);
