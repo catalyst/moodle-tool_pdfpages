@@ -30,6 +30,7 @@ $string['error:converternotfound'] = 'Could not find enabled converter, please c
 $string['error:invalidpageoption'] = 'The PDF page option you selected is not supported: {$a}';
 $string['error:urltopdf'] = 'URL to PDF conversion could not be completed.';
 $string['pdfpages:generatepdf'] = 'Generate a PDF from a Moodle URL';
+$string['privacy:metadata'] = 'The PDF Pages plugin does not store any personal data.';
 $string['settings:accesskeyheading'] = 'Access key settings';
 $string['settings:accesskeyttl'] = 'TTL (Time to live)';
 $string['settings:accesskeyttl_desc'] = 'The time in seconds for access keys to live before expiring';
@@ -38,3 +39,4 @@ $string['settings:chromiumpath'] = 'Path to Chromium';
 $string['settings:chromiumpath_desc'] = 'The path to the Chrome/Chromium binary';
 $string['settings:wkhtmltopdfpath'] = 'Path to wkhtmltopdf';
 $string['settings:wkhtmltopdfpath_desc'] = 'The path to the wkhtmltopdf binary';
+
