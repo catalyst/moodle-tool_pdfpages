@@ -79,6 +79,8 @@ abstract class converter {
         global $USER;
 
         try {
+            $options = $this->validate_options($options);
+
             $filename = ($filename === '') ? helper::get_moodle_url_pdf_filename($url) : $filename;
             $key = key_manager::create_user_key_for_url($USER->id, $url);
             $proxyurl = helper::get_proxy_url($url, $key);
@@ -151,5 +153,17 @@ abstract class converter {
         } catch (\moodle_exception $exception) {
             return false;
         }
+    }
+
+    /**
+     * Hook to validate options before conversion, override in extending classes.
+     *
+     * @param array $options any additional options to pass to conversion, valid options vary with converter
+     * instance, see relevant converter for further details.
+     *
+     * @return array validated options.
+     */
+    protected function validate_options(array $options): array {
+        return $options;
     }
 }

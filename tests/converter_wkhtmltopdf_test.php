@@ -111,7 +111,7 @@ class converter_wkhtmltopdf_test extends advanced_testcase {
             'print-media-type' => true,
             'enable-javascript' => true,
             'javascript-delay' => 200,
-            'background' => true,
+            'background' => false,
             'header-html' => '<p>Header template</p>',
             'footer-html' => '<p>Footer template</p>',
             'page-size' => 'A4',
@@ -122,8 +122,21 @@ class converter_wkhtmltopdf_test extends advanced_testcase {
             'afakeoption' => true // Not a valid option.
         ];
 
-        $this->expectException(moodle_exception::class);
-        $this->expectExceptionMessage('The PDF page option you selected is not supported: afakeoption');
-        $method->invoke($converter, $options);
+        $actual = $method->invoke($converter, $options);
+        // Should return any valid options.
+        $this->assertIsArray($actual);
+        $this->assertTrue($actual['print-media-type']);
+        $this->assertTrue($actual['enable-javascript']);
+        $this->assertEquals(200, $actual['javascript-delay']);
+        $this->assertFalse($actual['background']);
+        $this->assertEquals('<p>Header template</p>', $actual['header-html']);
+        $this->assertEquals('<p>Footer template</p>', $actual['footer-html']);
+        $this->assertEquals('A4', $actual['page-size']);
+        $this->assertEquals('0', $actual['margin-top']);
+        $this->assertEquals('10mm', $actual['margin-bottom']);
+        $this->assertEquals('10mm', $actual['margin-left']);
+        $this->assertEquals('10mm', $actual['margin-right']);
+        // Should remove any invalid options.
+        $this->assertArrayNotHasKey('afakeoption', $actual);
     }
 }
