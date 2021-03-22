@@ -74,7 +74,7 @@ class key_manager_test extends advanced_testcase {
 
         $url = new moodle_url('/my/index.php');
 
-        $actual = key_manager::create_user_key_for_url($url);
+        $actual = key_manager::create_user_key_for_url($user->id, $url);
 
         $instance = key_manager::generate_instance_for_url($url);
         $key = validate_user_key($actual, 'tool/pdfpages', $instance);
@@ -99,7 +99,7 @@ class key_manager_test extends advanced_testcase {
         $this->expectException(moodle_exception::class);
         $this->expectExceptionMessage('Sorry, but you do not currently have permissions to do that ' .
             '(Generate a PDF from a Moodle URL).');
-        key_manager::create_user_key_for_url($url);
+        key_manager::create_user_key_for_url($user->id, $url);
     }
 
     /**
@@ -120,7 +120,7 @@ class key_manager_test extends advanced_testcase {
 
         $url = new moodle_url('/my/index.php');
 
-        $actual = key_manager::create_user_key_for_url($url, '123.121.234.0/30');
+        $actual = key_manager::create_user_key_for_url($user->id, $url, '123.121.234.0/30');
 
         // Spoof server remote address matching CIDR IP restriction.
         $_SERVER['REMOTE_ADDR'] = '123.121.234.1';
@@ -158,7 +158,7 @@ class key_manager_test extends advanced_testcase {
         $this->getDataGenerator()->role_assign($roleid, $user->id);
 
         $url = new moodle_url('/my/index.php');
-        $key = key_manager::create_user_key_for_url($url);
+        $key = key_manager::create_user_key_for_url($user->id, $url);
 
         $conditions = [
             'value' => $key,

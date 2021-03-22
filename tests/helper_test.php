@@ -129,7 +129,7 @@ class tool_pdfpages_helper_test extends advanced_testcase {
         $course = $this->getDataGenerator()->create_course();
 
         $url = new moodle_url("/course/view.php?id={$course->id}");
-        $key = key_manager::create_user_key_for_url($url);
+        $key = key_manager::create_user_key_for_url($user->id, $url);
 
         $actual = helper::get_proxy_url($url, $key);
         $this->assertInstanceOf(moodle_url::class, $actual);

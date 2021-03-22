@@ -68,17 +68,16 @@ class key_manager {
     /**
      * Create a user key for a specific URL.
      *
+     * @param int $userid the user ID to create key for.
      * @param \moodle_url $url the URL to create user key for.
      * @param string $iprestriction optional IP range to restrict access to.
      *
      * @return string the created user key value.
      */
-    public static function create_user_key_for_url(\moodle_url $url, $iprestriction = ''): string {
-        global $USER;
-
+    public static function create_user_key_for_url(int $userid, \moodle_url $url, string $iprestriction = ''): string {
         $instance = self::generate_instance_for_url($url);
 
-        return self::create_user_key($USER->id, $instance, $iprestriction);
+        return self::create_user_key($userid, $instance, $iprestriction);
     }
 
     /**

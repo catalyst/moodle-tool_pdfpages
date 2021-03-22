@@ -55,7 +55,7 @@ class login_manager_test extends advanced_testcase {
         $this->getDataGenerator()->role_assign($roleid, $user->id);
 
         $url = new moodle_url('/my/index.php');
-        $key = key_manager::create_user_key_for_url($url);
+        $key = key_manager::create_user_key_for_url($user->id, $url);
 
         // Check that the key record exists and is for the correct user.
         $record = $DB->get_record('user_private_key', ['script' => 'tool/pdfpages', 'value' => $key]);
