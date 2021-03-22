@@ -78,9 +78,10 @@ abstract class converter {
                                               string $cookiename = '', string $cookievalue = ''): \stored_file {
 
         try {
-            $key = helper::create_user_key();
-            $proxyurl = helper::get_proxy_url($url, $key);
             $filename = ($filename === '') ? helper::get_moodle_url_pdf_filename($url) : $filename;
+            $instanceid = key_manager::get_instance_id($filename);
+            $key = key_manager::create_user_key($instanceid);
+            $proxyurl = helper::get_proxy_url($url, $key, $instanceid);
             $content = $this->generate_pdf_content($proxyurl, $filename, $options, $cookiename, $cookievalue);
 
             return $this->create_pdf_file($content, $filename);

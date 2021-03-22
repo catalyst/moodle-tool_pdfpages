@@ -27,16 +27,17 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use tool_pdfpages\helper;
+use tool_pdfpages\key_manager;
 
 require_once(__DIR__ . '/../../../config.php');
 
 $targeturl = required_param('url', PARAM_URL);
 $key = required_param('key', PARAM_ALPHANUM);
+$instanceid = required_param('instanceid', PARAM_INT);
 
 $url = new moodle_url($targeturl);
 
-helper::login_with_key($key);
+key_manager::login_with_key($key, $instanceid);
 
 require_capability('tool/pdfpages:generatepdf', \context_system::instance());
 
