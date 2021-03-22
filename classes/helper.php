@@ -25,7 +25,6 @@
 
 namespace tool_pdfpages;
 
-use core_user;
 use file_storage;
 use moodle_url;
 
@@ -50,6 +49,11 @@ class helper {
     const MOODLE_URL_PDF_FILEAREA = 'pdf';
 
     /**
+     * The proxy URL to pass conversions through.
+     */
+    const PROXY_URL = '/admin/tool/pdfpages/index.php';
+
+    /**
      * List of available converters.
      *
      * To add a new converter, the following steps need to be conducted:
@@ -58,30 +62,6 @@ class helper {
      * - Create a class extending `converter` abstract class and named `converter_<converter name>`
      */
     const CONVERTERS = ['chromium', 'wkhtmltopdf'];
-
-    /**
-     * Create a user key for PDF pages.
-     *
-     * @param string $iprestriction optional IP range to restrict access to.
-     *
-     * @return string the created user key value.
-     * @throws \moodle_exception if user doesn't have permission to create key.
-     */
-    public static function create_user_key(string $iprestriction = '') : string {
-        global $USER;
-
-        require_capability('tool/pdfpages:generatepdf', \context_system::instance());
-
-        $iprestriction = !empty($iprestriction) ? $iprestriction : null;
-
-        // Tidy up old keys.
-        delete_user_key('tool/pdfpages', $USER->id);
-
-        $ttl = get_config('tool_pdfpages', 'accesskeyttl');
-        $expirationtime = !empty($ttl) ? (time() + $ttl) : (time() + MINSECS);
-
-        return create_user_key('tool/pdfpages', $USER->id, null, $iprestriction, $expirationtime);
-    }
 
     /**
      * Get a tool_pdfpages plugin setting.
@@ -159,7 +139,12 @@ class helper {
      * @return \moodle_url
      */
     public static function get_proxy_url(moodle_url $targeturl, string $key) {
-        return new moodle_url('/admin/tool/pdfpages/index.php', ['url' => $targeturl->out(), 'key' => $key]);
+        $params = [
+            'url' => $targeturl->out(),
+            'key' => $key,
+        ];
+
+        return new moodle_url(self::PROXY_URL, $params);
     }
 
     /**
@@ -171,43 +156,5 @@ class helper {
      */
     public static function is_converter_enabled(string $convertername) {
         return array_key_exists($convertername, converter_factory::get_converters());
-    }
-
-    /**
-     * Login user with access key.
-     *
-     * @param string $key access key to use for user validation, this is required to login user and allow access of target page
-     * {@see \tool_pdfpages\helper::create_user_key}.
-     */
-    public static function login_with_key(string $key) {
-        $key = validate_user_key($key, 'tool/pdfpages', null);
-        // Destroy the single use key immediately following validation.
-        delete_user_key('tool/pdfpages', $key->userid);
-
-        self::setup_user_session($key->userid);
-    }
-
-    /**
-     * Setup a user session for headless browser use.
-     *
-     * @param int $userid the Moodle user ID.
-     *
-     * @throws \moodle_exception if the user ID was invalid.
-     */
-    protected static function setup_user_session(int $userid) {
-        global $DB;
-
-        if (!$user = $DB->get_record('user', ['id' => $userid])) {
-            throw new \moodle_exception('invaliduserid');
-        }
-
-        core_user::require_active_user($user, true, true);
-
-        enrol_check_plugins($user);
-        \core\session\manager::set_user($user);
-
-        if (!defined('USER_KEY_LOGIN')) {
-            define('USER_KEY_LOGIN', true);
-        }
     }
 }

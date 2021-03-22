@@ -24,6 +24,7 @@
  */
 
 use tool_pdfpages\helper;
+use tool_pdfpages\key_manager;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -36,82 +37,6 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_pdfpages_helper_test extends advanced_testcase {
-
-    /**
-     * Test that user keys are created correctly.
-     */
-    public function test_create_user_key() {
-        $this->resetAfterTest();
-
-        set_config('accesskeyttl', 60, 'tool_pdfpages');
-
-        $user = $this->getDataGenerator()->create_user();
-
-        // Assign the user a role with the capability to generate PDFs.
-        $roleid = $this->getDataGenerator()->create_role();
-        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
-        $this->getDataGenerator()->role_assign($roleid, $user->id);
-
-        $this->setUser($user);
-
-        $actual = helper::create_user_key();
-
-        $key = validate_user_key($actual, 'tool/pdfpages', null);
-        $this->assertEquals('tool/pdfpages', $key->script);
-        $this->assertEquals($user->id, $key->userid);
-    }
-
-    /**
-     * Test that key cannot be created if user doesn't have capability to create keys.
-     */
-    public function test_create_key_no_permission() {
-        $this->resetAfterTest();
-
-        set_config('accesskeyttl', 60, 'tool_pdfpages');
-
-        $user = $this->getDataGenerator()->create_user();
-
-        $this->setUser($user);
-
-        $this->expectException(moodle_exception::class);
-        $this->expectExceptionMessage('Sorry, but you do not currently have permissions to do that (Generate a PDF from a Moodle URL).');
-        helper::create_user_key();
-    }
-
-    /**
-     * Test that IP restrictions applied to access keys function correctly.
-     */
-    public function test_create_user_key_iprestriction() {
-        $this->resetAfterTest();
-
-        set_config('accesskeyttl', 60, 'tool_pdfpages');
-
-        $user = $this->getDataGenerator()->create_user();
-        $this->setUser($user);
-
-        // Assign the user a role with the capability to generate PDFs.
-        $roleid = $this->getDataGenerator()->create_role();
-        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
-        $this->getDataGenerator()->role_assign($roleid, $user->id);
-
-        $actual = helper::create_user_key('123.121.234.0/30');
-
-        // Spoof server remote address matching CIDR IP restriction.
-        $_SERVER['REMOTE_ADDR'] = '123.121.234.1';
-
-        // Should only validate if current remote address is within the specified IP restriction range.
-        $key = validate_user_key($actual, 'tool/pdfpages', null);
-        $this->assertEquals('tool/pdfpages', $key->script);
-        $this->assertEquals($user->id, $key->userid);
-        $this->assertEquals('123.121.234.0/30', $key->iprestriction);
-
-        // Spoof server remote address not matching CIDR IP restriction.
-        $_SERVER['REMOTE_ADDR'] = '123.121.234.4';
-
-        $this->expectException(moodle_exception::class);
-        $this->expectExceptionMessage('Client IP address mismatch');
-        validate_user_key($actual, 'tool/pdfpages', null);
-    }
 
     /**
      * Test getting a plugin setting value.
@@ -193,27 +118,6 @@ class tool_pdfpages_helper_test extends advanced_testcase {
     public function test_get_proxy_url() {
         $this->resetAfterTest();
 
-        $this->setAdminUser();
-
-        $course = $this->getDataGenerator()->create_course();
-
-        $url = new moodle_url("/course/view.php?id={$course->id}");
-        $key = helper::create_user_key();
-
-        $actual = helper::get_proxy_url($url, $key);
-        $this->assertInstanceOf(moodle_url::class, $actual);
-        $this->assertEquals($url->out(), $actual->get_param('url'));
-        $this->assertEquals($key, $actual->get_param('key'));
-    }
-
-    /**
-     * Test that user session is correctly created with a key login.
-     */
-    public function test_login_with_key() {
-        global $DB, $USER;
-
-        $this->resetAfterTest();
-
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
 
@@ -222,28 +126,14 @@ class tool_pdfpages_helper_test extends advanced_testcase {
         assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
         $this->getDataGenerator()->role_assign($roleid, $user->id);
 
-        $key = helper::create_user_key();
+        $course = $this->getDataGenerator()->create_course();
 
-        // Check that the key record exists and is for the correct user.
-        $record = $DB->get_record('user_private_key', ['script' => 'tool/pdfpages', 'value' => $key]);
-        $this->assertEquals($user->id, $record->userid);
+        $url = new moodle_url("/course/view.php?id={$course->id}");
+        $key = key_manager::create_user_key_for_url($user->id, $url);
 
-        // Emulate using new browser without an existing session or login.
-        \core\session\manager::kill_all_sessions();
-        $this->setUser();
-
-        helper::login_with_key($key);
-
-        // Login with key should correctly set up session and log in user.
-        $this->assertEquals($user->id, $USER->id);
-        $this->assertEquals($user->id, $_SESSION['USER']->id);
-
-        // Create a fake key.
-        $key = md5($user->id . '_' . time() . random_string(40));
-
-        // Invalid key should not allow login.
-        $this->expectException(moodle_exception::class);
-        $this->expectExceptionMessage('Incorrect key');
-        helper::login_with_key($key);
+        $actual = helper::get_proxy_url($url, $key);
+        $this->assertInstanceOf(moodle_url::class, $actual);
+        $this->assertEquals($url->out(), $actual->get_param('url'));
+        $this->assertEquals($key, $actual->get_param('key'));
     }
 }
