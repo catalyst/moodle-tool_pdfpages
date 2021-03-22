@@ -38,6 +38,11 @@ defined('MOODLE_INTERNAL') || die();
 class key_manager {
 
     /**
+     * The script name to associate with keys.
+     */
+    const SCRIPT = 'tool/pdfpages';
+
+    /**
      * Create a user key.
      *
      * @param int $instance the instance to create key for.
@@ -58,7 +63,7 @@ class key_manager {
         $ttl = get_config('tool_pdfpages', 'accesskeyttl');
         $expirationtime = !empty($ttl) ? (time() + $ttl) : (time() + MINSECS);
 
-        return create_user_key('tool/pdfpages', $USER->id, $instance, $iprestriction, $expirationtime);
+        return create_user_key(self::SCRIPT, $USER->id, $instance, $iprestriction, $expirationtime);
     }
 
     /**
@@ -72,7 +77,7 @@ class key_manager {
         global $DB, $USER;
 
         $record = [
-            'script' => 'tool/pdfpages',
+            'script' => self::SCRIPT,
             'userid' => $USER->id,
             'instance' => $instance
         ];
@@ -100,6 +105,6 @@ class key_manager {
      * @return object the validated key record.
      */
     public static function validate_user_key(string $key, int $instance): object {
-        return validate_user_key($key, 'tool/pdfpages', $instance);
+        return validate_user_key($key, self::SCRIPT, $instance);
     }
 }
