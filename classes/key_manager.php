@@ -40,105 +40,66 @@ class key_manager {
     /**
      * Create a user key.
      *
-     * @param int $instanceid the instance ID to create key for.
+     * @param int $instance the instance to create key for.
      * @param string $iprestriction optional IP range to restrict access to.
      *
      * @return string the created user key value.
      * @throws \moodle_exception if user doesn't have permission to create key.
      */
-    public static function create_user_key(int $instanceid, string $iprestriction = ''): string {
+    public static function create_user_key(int $instance, string $iprestriction = ''): string {
         global $USER;
 
         require_capability('tool/pdfpages:generatepdf', \context_system::instance());
 
         $iprestriction = !empty($iprestriction) ? $iprestriction : null;
 
-        self::delete_user_key($instanceid);
+        self::delete_user_key($instance);
 
         $ttl = get_config('tool_pdfpages', 'accesskeyttl');
         $expirationtime = !empty($ttl) ? (time() + $ttl) : (time() + MINSECS);
 
-        return create_user_key('tool/pdfpages', $USER->id, $instanceid, $iprestriction, $expirationtime);
+        return create_user_key('tool/pdfpages', $USER->id, $instance, $iprestriction, $expirationtime);
     }
 
     /**
      * Delete a user key.
      *
-     * @param int $instanceid the instance ID to delete user key for.
+     * @param int $instance the instance to delete user key for.
      *
      * @return bool true on success.
      */
-    public static function delete_user_key(int $instanceid): bool {
+    public static function delete_user_key(int $instance): bool {
         global $DB, $USER;
 
         $record = [
             'script' => 'tool/pdfpages',
             'userid' => $USER->id,
-            'instance' => $instanceid
+            'instance' => $instance
         ];
 
         return $DB->delete_records('user_private_key', $record);
     }
 
     /**
-     * Get a unique access key instance ID for a filename.
+     * Generate a unique access key instance for a seed value.
      *
-     * @param string $filename the filename to get instance ID for.
+     * @param string $seed the seed string to generate instance for.
      *
-     * @return int the instance ID.
+     * @return int the instance.
      */
-    public static function get_instance_id(string $filename): int {
-        return (int) substr(base_convert(sha1($filename), 16, 10), 0, 18);
-    }
-
-    /**
-     * Login user with access key.
-     *
-     * @param string $key access key to use for user validation, this is required to login user and allow access of target page.
-     * @param int $instanceid the instance ID of key to login with.
-     */
-    final public static function login_with_key(string $key, int $instanceid) {
-        $key = self::validate_user_key($key, $instanceid);
-
-        // Destroy the single use key immediately following validation.
-        self::delete_user_key($instanceid);
-
-        self::setup_user_session($key->userid);
-    }
-
-    /**
-     * Setup a user session for headless browser use.
-     *
-     * @param int $userid the Moodle user ID.
-     *
-     * @throws \moodle_exception if the user ID was invalid.
-     */
-    protected static function setup_user_session(int $userid) {
-        global $DB;
-
-        if (!$user = $DB->get_record('user', ['id' => $userid])) {
-            throw new \moodle_exception('invaliduserid');
-        }
-
-        \core_user::require_active_user($user, true, true);
-
-        enrol_check_plugins($user);
-        \core\session\manager::set_user($user);
-
-        if (!defined('USER_KEY_LOGIN')) {
-            define('USER_KEY_LOGIN', true);
-        }
+    public static function generate_instance(string $seed): int {
+        return (int) substr(base_convert(sha1($seed), 16, 10), 0, 18);
     }
 
     /**
      * Validate a key and return record if valid.
      *
      * @param string $key access key to validate.
-     * @param int $instanceid the instance ID of key to validate.
+     * @param int $instance the instance of key to validate.
      *
      * @return object the validated key record.
      */
-    public static function validate_user_key(string $key, int $instanceid): object {
-        return validate_user_key($key, 'tool/pdfpages', $instanceid);
+    public static function validate_user_key(string $key, int $instance): object {
+        return validate_user_key($key, 'tool/pdfpages', $instance);
     }
 }

@@ -123,13 +123,13 @@ class tool_pdfpages_helper_test extends advanced_testcase {
         $course = $this->getDataGenerator()->create_course();
 
         $url = new moodle_url("/course/view.php?id={$course->id}");
-        $instanceid = 123456789123456789;
-        $key = key_manager::create_user_key($instanceid);
+        $instance = 123456789123456789;
+        $key = key_manager::create_user_key($instance);
 
-        $actual = helper::get_proxy_url($url, $key, $instanceid);
+        $actual = helper::get_proxy_url($url, $key, $instance);
         $this->assertInstanceOf(moodle_url::class, $actual);
         $this->assertEquals($url->out(), $actual->get_param('url'));
         $this->assertEquals($key, $actual->get_param('key'));
-        $this->assertEquals($instanceid, $actual->get_param('instanceid'));
+        $this->assertEquals($instance, $actual->get_param('instance'));
     }
 }

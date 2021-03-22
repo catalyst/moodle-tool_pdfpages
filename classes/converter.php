@@ -79,9 +79,9 @@ abstract class converter {
 
         try {
             $filename = ($filename === '') ? helper::get_moodle_url_pdf_filename($url) : $filename;
-            $instanceid = key_manager::get_instance_id($filename);
-            $key = key_manager::create_user_key($instanceid);
-            $proxyurl = helper::get_proxy_url($url, $key, $instanceid);
+            $instance = key_manager::generate_instance($filename);
+            $key = key_manager::create_user_key($instance);
+            $proxyurl = helper::get_proxy_url($url, $key, $instance);
             $content = $this->generate_pdf_content($proxyurl, $filename, $options, $cookiename, $cookievalue);
 
             return $this->create_pdf_file($content, $filename);

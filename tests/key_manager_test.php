@@ -38,12 +38,12 @@ defined('MOODLE_INTERNAL') || die();
 class key_manager_test extends advanced_testcase {
 
     /**
-     * Test getting the instance ID for a filename.
+     * Test generating an the instance for a seed value.
      */
-    public function test_get_instance_id() {
+    public function test_generate_instance() {
         $filename = 'test.pdf';
 
-        $actual = key_manager::get_instance_id($filename);
+        $actual = key_manager::generate_instance($filename);
 
         // Should have no more that 19 digits, due to field length constraints in DB.
         $this->assertLessThanOrEqual(19, strlen($actual));
@@ -73,13 +73,13 @@ class key_manager_test extends advanced_testcase {
 
         $this->setUser($user);
 
-        $instanceid = 123456789101112131;
-        $actual = key_manager::create_user_key($instanceid);
+        $instance = 123456789101112131;
+        $actual = key_manager::create_user_key($instance);
 
-        $key = validate_user_key($actual, 'tool/pdfpages', $instanceid);
+        $key = validate_user_key($actual, 'tool/pdfpages', $instance);
         $this->assertEquals('tool/pdfpages', $key->script);
         $this->assertEquals($user->id, $key->userid);
-        $this->assertEquals($instanceid, $key->instance);
+        $this->assertEquals($instance, $key->instance);
     }
 
     /**
@@ -116,17 +116,17 @@ class key_manager_test extends advanced_testcase {
         assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
         $this->getDataGenerator()->role_assign($roleid, $user->id);
 
-        $instanceid = 123456789101112131;
-        $actual = key_manager::create_user_key($instanceid, '123.121.234.0/30');
+        $instance = 123456789101112131;
+        $actual = key_manager::create_user_key($instance, '123.121.234.0/30');
 
         // Spoof server remote address matching CIDR IP restriction.
         $_SERVER['REMOTE_ADDR'] = '123.121.234.1';
 
         // Should only validate if current remote address is within the specified IP restriction range.
-        $key = validate_user_key($actual, 'tool/pdfpages', $instanceid);
+        $key = validate_user_key($actual, 'tool/pdfpages', $instance);
         $this->assertEquals('tool/pdfpages', $key->script);
         $this->assertEquals($user->id, $key->userid);
-        $this->assertEquals($instanceid, $key->instance);
+        $this->assertEquals($instance, $key->instance);
         $this->assertEquals('123.121.234.0/30', $key->iprestriction);
 
         // Spoof server remote address not matching CIDR IP restriction.
@@ -134,7 +134,7 @@ class key_manager_test extends advanced_testcase {
 
         $this->expectException(moodle_exception::class);
         $this->expectExceptionMessage('Client IP address mismatch');
-        validate_user_key($actual, 'tool/pdfpages', $instanceid);
+        validate_user_key($actual, 'tool/pdfpages', $instance);
     }
 
     /**
@@ -148,13 +148,13 @@ class key_manager_test extends advanced_testcase {
         // Set admin user so key can be generated.
         $this->setAdminUser();
 
-        $instanceid = 123456789123456789;
-        $key = key_manager::create_user_key($instanceid);
+        $instance = 123456789123456789;
+        $key = key_manager::create_user_key($instance);
 
         $conditions = [
             'value' => $key,
             'script' => 'tool/pdfpages',
-            'instance' => $instanceid,
+            'instance' => $instance,
             'userid' => $USER->id
         ];
 
@@ -162,49 +162,7 @@ class key_manager_test extends advanced_testcase {
         $this->assertNotFalse($DB->get_record('user_private_key', $conditions));
 
         // Key record should be deleted.
-        key_manager::delete_user_key($instanceid);
+        key_manager::delete_user_key($instance);
         $this->assertFalse($DB->get_record('user_private_key', $conditions));
-    }
-
-    /**
-     * Test that user session is correctly created with a key login.
-     */
-    public function test_login_with_key() {
-        global $DB, $USER;
-
-        $this->resetAfterTest();
-
-        $user = $this->getDataGenerator()->create_user();
-        $this->setUser($user);
-
-        // Assign the user a role with the capability to generate PDFs.
-        $roleid = $this->getDataGenerator()->create_role();
-        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
-        $this->getDataGenerator()->role_assign($roleid, $user->id);
-
-        $instanceid = 123456789123456789;
-        $key = key_manager::create_user_key($instanceid);
-
-        // Check that the key record exists and is for the correct user.
-        $record = $DB->get_record('user_private_key', ['script' => 'tool/pdfpages', 'value' => $key]);
-        $this->assertEquals($user->id, $record->userid);
-
-        // Emulate using new browser without an existing session or login.
-        \core\session\manager::kill_all_sessions();
-        $this->setUser();
-
-        key_manager::login_with_key($key, $instanceid);
-
-        // Login with key should correctly set up session and log in user.
-        $this->assertEquals($user->id, $USER->id);
-        $this->assertEquals($user->id, $_SESSION['USER']->id);
-
-        // Create a fake key.
-        $key = md5($user->id . '_' . time() . random_string(40));
-
-        // Invalid key should not allow login.
-        $this->expectException(moodle_exception::class);
-        $this->expectExceptionMessage('Incorrect key');
-        key_manager::login_with_key($key, $instanceid);
     }
 }
