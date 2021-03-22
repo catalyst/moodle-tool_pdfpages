@@ -55,7 +55,7 @@ class login_manager_test extends advanced_testcase {
         $this->getDataGenerator()->role_assign($roleid, $user->id);
 
         $instance = 123456789123456789;
-        $key = key_manager::create_user_key($instance);
+        $key = key_manager::create_user_key($user->id, $instance);
 
         // Check that the key record exists and is for the correct user.
         $record = $DB->get_record('user_private_key', ['script' => 'tool/pdfpages', 'value' => $key]);

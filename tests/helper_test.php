@@ -118,13 +118,19 @@ class tool_pdfpages_helper_test extends advanced_testcase {
     public function test_get_proxy_url() {
         $this->resetAfterTest();
 
-        $this->setAdminUser();
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        // Assign the user a role with the capability to generate PDFs.
+        $roleid = $this->getDataGenerator()->create_role();
+        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
+        $this->getDataGenerator()->role_assign($roleid, $user->id);
 
         $course = $this->getDataGenerator()->create_course();
 
         $url = new moodle_url("/course/view.php?id={$course->id}");
         $instance = 123456789123456789;
-        $key = key_manager::create_user_key($instance);
+        $key = key_manager::create_user_key($user->id, $instance);
 
         $actual = helper::get_proxy_url($url, $key, $instance);
         $this->assertInstanceOf(moodle_url::class, $actual);

@@ -76,11 +76,12 @@ abstract class converter {
      */
     final public function convert_moodle_url_to_pdf(moodle_url $url, string $filename = '', array $options = [],
                                               string $cookiename = '', string $cookievalue = ''): \stored_file {
+        global $USER;
 
         try {
             $filename = ($filename === '') ? helper::get_moodle_url_pdf_filename($url) : $filename;
             $instance = key_manager::generate_instance($filename);
-            $key = key_manager::create_user_key($instance);
+            $key = key_manager::create_user_key($USER->id, $instance);
             $proxyurl = helper::get_proxy_url($url, $key, $instance);
             $content = $this->generate_pdf_content($proxyurl, $filename, $options, $cookiename, $cookievalue);
 

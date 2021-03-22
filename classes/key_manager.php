@@ -45,40 +45,40 @@ class key_manager {
     /**
      * Create a user key.
      *
+     * @param int $usedid the user ID to create key for.
      * @param int $instance the instance to create key for.
      * @param string $iprestriction optional IP range to restrict access to.
      *
      * @return string the created user key value.
      * @throws \moodle_exception if user doesn't have permission to create key.
      */
-    public static function create_user_key(int $instance, string $iprestriction = ''): string {
-        global $USER;
-
+    public static function create_user_key(int $userid, int $instance, string $iprestriction = ''): string {
         require_capability('tool/pdfpages:generatepdf', \context_system::instance());
 
         $iprestriction = !empty($iprestriction) ? $iprestriction : null;
 
-        self::delete_user_key($instance);
+        self::delete_user_keys($userid, $instance);
 
         $ttl = get_config('tool_pdfpages', 'accesskeyttl');
         $expirationtime = !empty($ttl) ? (time() + $ttl) : (time() + MINSECS);
 
-        return create_user_key(self::SCRIPT, $USER->id, $instance, $iprestriction, $expirationtime);
+        return create_user_key(self::SCRIPT, $userid, $instance, $iprestriction, $expirationtime);
     }
 
     /**
      * Delete a user key.
      *
+     * @param int $userid the user ID to delete user key for.
      * @param int $instance the instance to delete user key for.
      *
      * @return bool true on success.
      */
-    public static function delete_user_key(int $instance): bool {
-        global $DB, $USER;
+    public static function delete_user_keys(int $userid, int $instance): bool {
+        global $DB;
 
         $record = [
             'script' => self::SCRIPT,
-            'userid' => $USER->id,
+            'userid' => $userid,
             'instance' => $instance
         ];
 

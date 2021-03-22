@@ -74,7 +74,7 @@ class key_manager_test extends advanced_testcase {
         $this->setUser($user);
 
         $instance = 123456789101112131;
-        $actual = key_manager::create_user_key($instance);
+        $actual = key_manager::create_user_key($user->id, $instance);
 
         $key = validate_user_key($actual, 'tool/pdfpages', $instance);
         $this->assertEquals('tool/pdfpages', $key->script);
@@ -91,13 +91,12 @@ class key_manager_test extends advanced_testcase {
         set_config('accesskeyttl', 60, 'tool_pdfpages');
 
         $user = $this->getDataGenerator()->create_user();
-
         $this->setUser($user);
 
         $this->expectException(moodle_exception::class);
         $this->expectExceptionMessage('Sorry, but you do not currently have permissions to do that ' .
             '(Generate a PDF from a Moodle URL).');
-        key_manager::create_user_key(123456789101112131);
+        key_manager::create_user_key($user->id, 123456789101112131);
     }
 
     /**
@@ -117,7 +116,7 @@ class key_manager_test extends advanced_testcase {
         $this->getDataGenerator()->role_assign($roleid, $user->id);
 
         $instance = 123456789101112131;
-        $actual = key_manager::create_user_key($instance, '123.121.234.0/30');
+        $actual = key_manager::create_user_key($user->id, $instance, '123.121.234.0/30');
 
         // Spoof server remote address matching CIDR IP restriction.
         $_SERVER['REMOTE_ADDR'] = '123.121.234.1';
@@ -140,29 +139,34 @@ class key_manager_test extends advanced_testcase {
     /**
      * Test that user keys are correctly deleted.
      */
-    public function test_delete_user_key() {
-        global $DB, $USER;
+    public function test_delete_user_keys() {
+        global $DB;
 
         $this->resetAfterTest();
 
-        // Set admin user so key can be generated.
-        $this->setAdminUser();
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        // Assign the user a role with the capability to generate PDFs.
+        $roleid = $this->getDataGenerator()->create_role();
+        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
+        $this->getDataGenerator()->role_assign($roleid, $user->id);
 
         $instance = 123456789123456789;
-        $key = key_manager::create_user_key($instance);
+        $key = key_manager::create_user_key($user->id, $instance);
 
         $conditions = [
             'value' => $key,
             'script' => 'tool/pdfpages',
             'instance' => $instance,
-            'userid' => $USER->id
+            'userid' => $user->id
         ];
 
         // Check that key is created in DB.
         $this->assertNotFalse($DB->get_record('user_private_key', $conditions));
 
         // Key record should be deleted.
-        key_manager::delete_user_key($instance);
+        key_manager::delete_user_keys($user->id, $instance);
         $this->assertFalse($DB->get_record('user_private_key', $conditions));
     }
 }

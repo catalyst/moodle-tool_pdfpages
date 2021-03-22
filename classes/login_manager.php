@@ -47,7 +47,7 @@ class login_manager {
         $key = key_manager::validate_user_key($key, $instance);
 
         // Destroy the single use key immediately following validation.
-        key_manager::delete_user_key($instance);
+        key_manager::delete_user_keys($key->userid, $instance);
 
         self::setup_user_session($key->userid);
     }
