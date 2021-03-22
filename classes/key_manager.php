@@ -45,7 +45,7 @@ class key_manager {
     /**
      * Create a user key.
      *
-     * @param int $usedid the user ID to create key for.
+     * @param int $userid the user ID to create key for.
      * @param int $instance the instance to create key for.
      * @param string $iprestriction optional IP range to restrict access to.
      *
