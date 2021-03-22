@@ -87,4 +87,54 @@ class converter_test extends advanced_testcase {
         $this->assertEmpty((array) $SESSION);
         $this->assertEquals(0, $_SESSION['USER']->id);
     }
+
+    /**
+     * Test that converter does not destroy access key session after conversion when `keepsession`
+     * parameter is set.
+     */
+    public function test_convert_moodle_url_to_pdf_keep_session() {
+        global $USER;
+
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        // Assign the user a role with the capability to generate PDFs.
+        $roleid = $this->getDataGenerator()->create_role();
+        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
+        $this->getDataGenerator()->role_assign($roleid, $user->id);
+
+        // Check that session is created for logged in user before conversion.
+        $this->assertEquals($user->id, $USER->id);
+        $this->assertEquals($user->id, $_SESSION['USER']->id);
+
+        $mock = $this->createMock(converter::class);
+
+        // Mock the abstract PDF generation method.
+        $pdfcontent = 'Test PDF content';
+        $mock->method('generate_pdf_content')
+            ->willReturn($pdfcontent);
+
+        // Mock the PDF file creation.
+        $filerecord = [
+            'contextid' => \context_system::instance()->id,
+            'component' => 'tool_pdfpages',
+            'filearea' => 'pdf',
+            'itemid' => 0,
+            'filepath' => "/base/",
+            'filename' => 'test.pdf'
+        ];
+        $fs = get_file_storage();
+        $file = $fs->create_file_from_string($filerecord, $pdfcontent);
+        $mock->method('create_pdf_file')
+            ->willReturn($file);
+
+        $url = new moodle_url('/');
+        $mock->convert_moodle_url_to_pdf($url, '', [], true);
+
+        // User session should not be destroyed following conversion with `keepsession` flag set.
+        $this->assertEquals($user->id, $USER->id);
+        $this->assertEquals($user->id, $_SESSION['USER']->id);
+    }
 }
