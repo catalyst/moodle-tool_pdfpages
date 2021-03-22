@@ -119,13 +119,28 @@ class converter_chromium_test extends advanced_testcase {
             'marginBottom' => 1.4,
             'marginLeft'  => 0.4,
             'marginRight' => 0.4,
-            'preferCSSPageSize' => true,
+            'preferCSSPageSize' => false,
             'scale' => 1.0,
             'afakeoption' => true // Not a valid option.
         ];
 
-        $this->expectException(moodle_exception::class);
-        $this->expectExceptionMessage('The PDF page option you selected is not supported: afakeoption');
-        $method->invoke($converter, $options);
+        $actual = $method->invoke($converter, $options);
+        // Should return any valid options.
+        $this->assertIsArray($actual);
+        $this->assertTrue($actual['landscape']);
+        $this->assertTrue($actual['printBackground']);
+        $this->assertTrue($actual['displayHeaderFooter']);
+        $this->assertEquals('<p>Header template</p>', $actual['headerTemplate']);
+        $this->assertEquals('<p>Footer template</p>', $actual['footerTemplate']);
+        $this->assertEquals(6.0, $actual['paperWidth']);
+        $this->assertEquals(6.0, $actual['paperHeight']);
+        $this->assertEquals(0.0, $actual['marginTop']);
+        $this->assertEquals(1.4, $actual['marginBottom']);
+        $this->assertEquals(0.4, $actual['marginLeft']);
+        $this->assertEquals(0.4, $actual['marginRight']);
+        $this->assertFalse($actual['preferCSSPageSize']);
+        $this->assertEquals(1.0, $actual['scale']);
+        // Should remove any invalid options.
+        $this->assertArrayNotHasKey('afakeoption', $actual);
     }
 }

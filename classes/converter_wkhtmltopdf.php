@@ -201,8 +201,6 @@ class converter_wkhtmltopdf extends converter {
      */
     protected function generate_pdf_content(moodle_url $proxyurl, string $filename = '', array $options = [],
                                               string $cookiename = '', string $cookievalue = ''): string {
-        $this->validate_options($options);
-
         $pdf = new Pdf(helper::get_config($this->get_name() . 'path'));
         $pdf->setOptions($options);
 
@@ -216,15 +214,20 @@ class converter_wkhtmltopdf extends converter {
     /**
      * Validate a list of options.
      *
-     * @param array $options
+     * @param array $options any additional options to pass to conversion.
+     * {@see \tool_pdfpages\converter_wkhtmltopdf::VALID_OPTIONS}
      *
-     * @throws \moodle_exception if an option is invalid.
+     * @return array validated options.
      */
-    protected function validate_options(array $options) {
-        foreach (array_keys($options) as $option) {
-            if (!in_array($option, self::VALID_OPTIONS)) {
-                throw new \moodle_exception('error:invalidpageoption', 'tool_pdfpages', '', $option);
+    protected function validate_options(array $options): array {
+        $validoptions = [];
+
+        foreach ($options as $option => $value) {
+            if (in_array($option, self::VALID_OPTIONS)) {
+                $validoptions[$option] = $value;
             }
         }
+
+        return $validoptions;
     }
 }

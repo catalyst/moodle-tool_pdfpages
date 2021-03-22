@@ -83,8 +83,6 @@ class converter_chromium extends converter {
      */
     protected function generate_pdf_content(moodle_url $proxyurl, string $filename = '', array $options = [],
                                               string $cookiename = '', string $cookievalue = ''): string {
-        $this->validate_options($options);
-
         try {
             $browserfactory = new BrowserFactory(helper::get_config($this->get_name() . 'path'));
             $browser = $browserfactory->createBrowser([
@@ -117,15 +115,20 @@ class converter_chromium extends converter {
     /**
      * Validate a list of options.
      *
-     * @param array $options
+     * @param array $options any additional options to pass to conversion.
+     * {@see \tool_pdfpages\converter_chromium::VALID_OPTIONS}
      *
-     * @throws \moodle_exception if an option is invalid.
+     * @return array validated options.
      */
-    protected function validate_options(array $options) {
-        foreach (array_keys($options) as $option) {
-            if (!array_key_exists($option, self::VALID_OPTIONS)) {
-                throw new \moodle_exception('error:invalidpageoption', 'tool_pdfpages', '', $option);
+    protected function validate_options(array $options): array {
+        $validoptions = [];
+
+        foreach ($options as $option => $value) {
+            if (array_key_exists($option, self::VALID_OPTIONS)) {
+                $validoptions[$option] = $value;
             }
         }
+
+        return $validoptions;
     }
 }
