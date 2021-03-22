@@ -54,8 +54,8 @@ class login_manager_test extends advanced_testcase {
         assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
         $this->getDataGenerator()->role_assign($roleid, $user->id);
 
-        $instance = 123456789123456789;
-        $key = key_manager::create_user_key($user->id, $instance);
+        $url = new moodle_url('/my/index.php');
+        $key = key_manager::create_user_key_for_url($url);
 
         // Check that the key record exists and is for the correct user.
         $record = $DB->get_record('user_private_key', ['script' => 'tool/pdfpages', 'value' => $key]);
@@ -65,7 +65,7 @@ class login_manager_test extends advanced_testcase {
         \core\session\manager::kill_all_sessions();
         $this->setUser();
 
-        login_manager::login_with_key($key, $instance);
+        login_manager::login_with_key($key, $url);
 
         // Login with key should correctly set up session and log in user.
         $this->assertEquals($user->id, $USER->id);
@@ -77,7 +77,7 @@ class login_manager_test extends advanced_testcase {
         // Invalid key should not allow login.
         $this->expectException(moodle_exception::class);
         $this->expectExceptionMessage('Incorrect key');
-        login_manager::login_with_key($key, $instance);
+        login_manager::login_with_key($key, $url);
     }
 
 }

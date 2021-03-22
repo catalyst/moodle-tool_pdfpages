@@ -38,18 +38,17 @@ defined('MOODLE_INTERNAL') || die();
 class key_manager_test extends advanced_testcase {
 
     /**
-     * Test generating an the instance for a seed value.
+     * Test generating an the instance for a URL.
      */
-    public function test_generate_instance() {
-        $filename = 'test.pdf';
-
-        $actual = key_manager::generate_instance($filename);
+    public function test_generate_instance_for_url() {
+        $url = new moodle_url('/my/index.php');
+        $actual = key_manager::generate_instance_for_url($url);
 
         // Should have no more that 19 digits, due to field length constraints in DB.
         $this->assertLessThanOrEqual(19, strlen($actual));
 
-        // Should match a SHA1 hash of the filename converted to base 10 and shortened to fit field constraints.
-        $sha1 = sha1($filename);
+        // Should match a SHA1 hash of the unescaped URL converted to base 10 and shortened to fit field constraints.
+        $sha1 = sha1($url->out(false));
         $base10 = base_convert($sha1, 16, 10);
         $expected = (int) substr($base10, 0, 18);
         $this->assertIsInt($actual);
@@ -57,9 +56,9 @@ class key_manager_test extends advanced_testcase {
     }
 
     /**
-     * Test that user keys are created correctly.
+     * Test that user keys are created correctly for URLs.
      */
-    public function test_create_user_key() {
+    public function test_create_user_key_for_url() {
         $this->resetAfterTest();
 
         set_config('accesskeyttl', 60, 'tool_pdfpages');
@@ -73,9 +72,11 @@ class key_manager_test extends advanced_testcase {
 
         $this->setUser($user);
 
-        $instance = 123456789101112131;
-        $actual = key_manager::create_user_key($user->id, $instance);
+        $url = new moodle_url('/my/index.php');
 
+        $actual = key_manager::create_user_key_for_url($url);
+
+        $instance = key_manager::generate_instance_for_url($url);
         $key = validate_user_key($actual, 'tool/pdfpages', $instance);
         $this->assertEquals('tool/pdfpages', $key->script);
         $this->assertEquals($user->id, $key->userid);
@@ -83,9 +84,9 @@ class key_manager_test extends advanced_testcase {
     }
 
     /**
-     * Test that key cannot be created if user doesn't have capability to create keys.
+     * Test that URL key cannot be created if user doesn't have capability to create keys.
      */
-    public function test_create_key_no_permission() {
+    public function test_create_key_for_url_no_permission() {
         $this->resetAfterTest();
 
         set_config('accesskeyttl', 60, 'tool_pdfpages');
@@ -93,16 +94,18 @@ class key_manager_test extends advanced_testcase {
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
 
+        $url = new moodle_url('/my/index.php');
+
         $this->expectException(moodle_exception::class);
         $this->expectExceptionMessage('Sorry, but you do not currently have permissions to do that ' .
             '(Generate a PDF from a Moodle URL).');
-        key_manager::create_user_key($user->id, 123456789101112131);
+        key_manager::create_user_key_for_url($url);
     }
 
     /**
      * Test that IP restrictions applied to access keys function correctly.
      */
-    public function test_create_user_key_iprestriction() {
+    public function test_create_user_key_for_url_iprestriction() {
         $this->resetAfterTest();
 
         set_config('accesskeyttl', 60, 'tool_pdfpages');
@@ -115,13 +118,15 @@ class key_manager_test extends advanced_testcase {
         assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
         $this->getDataGenerator()->role_assign($roleid, $user->id);
 
-        $instance = 123456789101112131;
-        $actual = key_manager::create_user_key($user->id, $instance, '123.121.234.0/30');
+        $url = new moodle_url('/my/index.php');
+
+        $actual = key_manager::create_user_key_for_url($url, '123.121.234.0/30');
 
         // Spoof server remote address matching CIDR IP restriction.
         $_SERVER['REMOTE_ADDR'] = '123.121.234.1';
 
         // Should only validate if current remote address is within the specified IP restriction range.
+        $instance = key_manager::generate_instance_for_url($url);
         $key = validate_user_key($actual, 'tool/pdfpages', $instance);
         $this->assertEquals('tool/pdfpages', $key->script);
         $this->assertEquals($user->id, $key->userid);
@@ -139,7 +144,7 @@ class key_manager_test extends advanced_testcase {
     /**
      * Test that user keys are correctly deleted.
      */
-    public function test_delete_user_keys() {
+    public function test_delete_user_keys_for_url() {
         global $DB;
 
         $this->resetAfterTest();
@@ -152,13 +157,13 @@ class key_manager_test extends advanced_testcase {
         assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
         $this->getDataGenerator()->role_assign($roleid, $user->id);
 
-        $instance = 123456789123456789;
-        $key = key_manager::create_user_key($user->id, $instance);
+        $url = new moodle_url('/my/index.php');
+        $key = key_manager::create_user_key_for_url($url);
 
         $conditions = [
             'value' => $key,
             'script' => 'tool/pdfpages',
-            'instance' => $instance,
+            'instance' => key_manager::generate_instance_for_url($url),
             'userid' => $user->id
         ];
 
@@ -166,7 +171,7 @@ class key_manager_test extends advanced_testcase {
         $this->assertNotFalse($DB->get_record('user_private_key', $conditions));
 
         // Key record should be deleted.
-        key_manager::delete_user_keys($user->id, $instance);
+        key_manager::delete_user_keys_for_url($user->id, $url);
         $this->assertFalse($DB->get_record('user_private_key', $conditions));
     }
 }

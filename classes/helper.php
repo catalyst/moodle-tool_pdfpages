@@ -135,15 +135,13 @@ class helper {
      *
      * @param \moodle_url $targeturl the target URL to reach after passing through proxy.
      * @param string $key the access key to use for Moodle user login validation.
-     * @param int $instance the instance to use for access key. {@see \tool_pdfpages\key_manager::generate_instance}.
      *
      * @return \moodle_url
      */
-    public static function get_proxy_url(moodle_url $targeturl, string $key, int $instance) {
+    public static function get_proxy_url(moodle_url $targeturl, string $key) {
         $params = [
             'url' => $targeturl->out(),
             'key' => $key,
-            'instance' => $instance
         ];
 
         return new moodle_url(self::PROXY_URL, $params);

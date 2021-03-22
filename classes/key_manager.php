@@ -52,7 +52,7 @@ class key_manager {
      * @return string the created user key value.
      * @throws \moodle_exception if user doesn't have permission to create key.
      */
-    public static function create_user_key(int $userid, int $instance, string $iprestriction = ''): string {
+    protected static function create_user_key(int $userid, int $instance, string $iprestriction = ''): string {
         require_capability('tool/pdfpages:generatepdf', \context_system::instance());
 
         $iprestriction = !empty($iprestriction) ? $iprestriction : null;
@@ -66,14 +66,30 @@ class key_manager {
     }
 
     /**
-     * Delete a user key.
+     * Create a user key for a specific URL.
+     *
+     * @param \moodle_url $url the URL to create user key for.
+     * @param string $iprestriction optional IP range to restrict access to.
+     *
+     * @return string the created user key value.
+     */
+    public static function create_user_key_for_url(\moodle_url $url, $iprestriction = ''): string {
+        global $USER;
+
+        $instance = self::generate_instance_for_url($url);
+
+        return self::create_user_key($USER->id, $instance, $iprestriction);
+    }
+
+    /**
+     * Delete a user keys.
      *
      * @param int $userid the user ID to delete user key for.
      * @param int $instance the instance to delete user key for.
      *
      * @return bool true on success.
      */
-    public static function delete_user_keys(int $userid, int $instance): bool {
+    protected static function delete_user_keys(int $userid, int $instance): bool {
         global $DB;
 
         $record = [
@@ -86,14 +102,39 @@ class key_manager {
     }
 
     /**
+     * Delete user keys for a URL.
+     *
+     * @param int $userid the user ID to delete user keys for.
+     * @param \moodle_url $url the URL to delete user keys for.
+     *
+     * @return bool true on success.
+     */
+    public static function delete_user_keys_for_url(int $userid, \moodle_url $url): bool {
+        $instance = self::generate_instance_for_url($url);
+
+        return self::delete_user_keys($userid, $instance);
+    }
+
+    /**
      * Generate a unique access key instance for a seed value.
      *
      * @param string $seed the seed string to generate instance for.
      *
      * @return int the instance.
      */
-    public static function generate_instance(string $seed): int {
+    protected static function generate_instance(string $seed): int {
         return (int) substr(base_convert(sha1($seed), 16, 10), 0, 18);
+    }
+
+    /**
+     * Generate a unique access key instance for a URL.
+     *
+     * @param \moodle_url $url the URL to generate instance for.
+     *
+     * @return int the instance.
+     */
+    public static function generate_instance_for_url(\moodle_url $url): int {
+        return self::generate_instance($url->out(false));
     }
 
     /**
@@ -104,7 +145,21 @@ class key_manager {
      *
      * @return object the validated key record.
      */
-    public static function validate_user_key(string $key, int $instance): object {
+    protected static function validate_user_key(string $key, int $instance): object {
         return validate_user_key($key, self::SCRIPT, $instance);
+    }
+
+    /**
+     * Validate a key for a specific URL and return record if valid.
+     *
+     * @param string $key access key to validate.
+     * @param \moodle_url $url the URL to check key against.
+     *
+     * @return object the validated key record.
+     */
+    public static function validate_user_key_for_url(string $key, \moodle_url $url): object {
+        $instance = self::generate_instance_for_url($url);
+
+        return self::validate_user_key($key, $instance);
     }
 }

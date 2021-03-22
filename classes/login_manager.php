@@ -41,13 +41,13 @@ class login_manager {
      * Login user with access key.
      *
      * @param string $key access key to use for user validation, this is required to login user and allow access of target page.
-     * @param int $instance the instance of key to login with.
+     * @param \moodle_url $url the Moodle URL to login for with key.
      */
-    final public static function login_with_key(string $key, int $instance) {
-        $key = key_manager::validate_user_key($key, $instance);
+    final public static function login_with_key(string $key, \moodle_url $url) {
+        $key = key_manager::validate_user_key_for_url($key, $url);
 
         // Destroy the single use key immediately following validation.
-        key_manager::delete_user_keys($key->userid, $instance);
+        key_manager::delete_user_keys_for_url($key->userid, $url);
 
         self::setup_user_session($key->userid);
     }

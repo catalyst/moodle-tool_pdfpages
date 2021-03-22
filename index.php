@@ -33,11 +33,10 @@ require_once(__DIR__ . '/../../../config.php');
 
 $targeturl = required_param('url', PARAM_URL);
 $key = required_param('key', PARAM_ALPHANUM);
-$instance = required_param('instance', PARAM_INT);
 
 $url = new moodle_url($targeturl);
 
-login_manager::login_with_key($key, $instance);
+login_manager::login_with_key($key, $url);
 
 require_capability('tool/pdfpages:generatepdf', \context_system::instance());
 
