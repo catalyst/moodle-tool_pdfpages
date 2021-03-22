@@ -49,6 +49,11 @@ class helper {
     const MOODLE_URL_PDF_FILEAREA = 'pdf';
 
     /**
+     * The proxy URL to pass conversions through.
+     */
+    const PROXY_URL = '/admin/tool/pdfpages/index.php';
+
+    /**
      * List of available converters.
      *
      * To add a new converter, the following steps need to be conducted:
@@ -141,7 +146,7 @@ class helper {
             'instance' => $instance
         ];
 
-        return new moodle_url('/admin/tool/pdfpages/index.php', $params);
+        return new moodle_url(self::PROXY_URL, $params);
     }
 
     /**
