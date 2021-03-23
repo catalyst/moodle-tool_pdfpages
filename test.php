@@ -38,5 +38,5 @@ $options = json_decode($options, true);
 $url = new moodle_url($rawurl);
 $converter = \tool_pdfpages\converter_factory::get_converter($converter);
 
-$pdffile = $converter->convert_moodle_url_to_pdf($url, $filename, $options);
+$pdffile = $converter->convert_moodle_url_to_pdf($url, $filename, $options, true);
 send_file($pdffile, $pdffile->get_filename());

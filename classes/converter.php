@@ -69,13 +69,16 @@ abstract class converter {
      * (if none is specified, filename will be generated {@see \tool_pdfpages\helper::get_moodle_url_pdf_filename})
      * @param array $options any additional options to pass to converter, valid options vary with converter
      * instance, see relevant converter for further details.
+     * @param bool $keepsession should session be maintained after conversion? (For security reasons, this should always be `false`
+     * when conducting a conversion outside of a browser window, such as in an adhoc task or other background process, to prevent
+     * session hijacking.)
      * @param string $cookiename cookie name to apply to conversion (optional).
      * @param string $cookievalue cookie value to apply to conversion (optional).
      *
      * @return \stored_file the stored file created during conversion.
      */
     final public function convert_moodle_url_to_pdf(moodle_url $url, string $filename = '', array $options = [],
-                                              string $cookiename = '', string $cookievalue = ''): \stored_file {
+            bool $keepsession = false, string $cookiename = '', string $cookievalue = ''): \stored_file {
         global $USER;
 
         try {
@@ -90,8 +93,10 @@ abstract class converter {
         } catch (\Exception $exception) {
             throw new \moodle_exception('error:urltopdf', 'tool_pdfpages', '', null, $exception->getMessage());
         } finally {
-            // Make sure the access key token session cannot be used for any other requests, prevent session hijacking.
-            \core\session\manager::terminate_current();
+            if (!$keepsession) {
+                // Make sure the access key token session cannot be used for any other requests, prevent session hijacking.
+                \core\session\manager::terminate_current();
+            }
         }
     }
 
