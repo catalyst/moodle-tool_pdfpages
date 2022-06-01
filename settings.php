@@ -44,7 +44,7 @@ if (!empty($hassiteconfig)) {
         ''));
 
     $settings->add(new admin_setting_configtext('tool_pdfpages/chromiumresponsetimeout',
-        get_string('settings:responsetimeout', 'tool_pdfpages'),
+        get_string('settings:chromiumresponsetimeout', 'tool_pdfpages'),
         get_string('settings:responsetimeout_desc', 'tool_pdfpages'),
         10, PARAM_INT));
 
