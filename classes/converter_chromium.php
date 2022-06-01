@@ -103,7 +103,7 @@ class converter_chromium extends converter {
             $page->navigate($proxyurl->out(false))->waitForNavigation();
             $pdf = $page->pdf($options);
 
-            $timeout = 1000 * get_config('tool_pdfpages', 'responsetimeout');
+            $timeout = 1000 * helper::get_config($this->get_name() . 'responsetimeout');
             return base64_decode($pdf->getBase64($timeout));
         } finally {
             // Always close the browser instance to ensure that chromium process is stopped.
