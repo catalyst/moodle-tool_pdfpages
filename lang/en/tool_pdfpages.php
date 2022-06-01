@@ -36,6 +36,8 @@ $string['settings:accesskeyttl_desc'] = 'The time in seconds for access keys to 
 $string['settings:convertersheading'] = 'Converter settings';
 $string['settings:chromiumpath'] = 'Path to Chromium';
 $string['settings:chromiumpath_desc'] = 'The path to the Chrome/Chromium binary';
+$string['settings:chromiumresponsetimeout'] = 'Response timeout';
+$string['settings:chromiumresponsetimeout_desc'] = 'Length of time in seconds to wait for response from Chromium';
 $string['settings:wkhtmltopdfpath'] = 'Path to wkhtmltopdf';
 $string['settings:wkhtmltopdfpath_desc'] = 'The path to the wkhtmltopdf binary';
 

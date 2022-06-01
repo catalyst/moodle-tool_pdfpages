@@ -43,6 +43,11 @@ if (!empty($hassiteconfig)) {
         get_string('settings:chromiumpath_desc', 'tool_pdfpages'),
         ''));
 
+    $settings->add(new admin_setting_configtext('tool_pdfpages/chromiumresponsetimeout',
+        get_string('settings:chromiumresponsetimeout', 'tool_pdfpages'),
+        get_string('settings:chromiumresponsetimeout_desc', 'tool_pdfpages'),
+        10, PARAM_INT));
+
     $settings->add(new admin_setting_heading('tool_pdfpages/accesskey',
         get_string('settings:accesskeyheading', 'tool_pdfpages'), ''));
 
