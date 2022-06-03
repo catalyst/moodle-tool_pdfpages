@@ -14,18 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Tests for key manager.
- *
- * @package    tool_pdfpages
- * @author     Tom Dickman <tomdickman@catalyst-au.net>
- * @copyright  2021 Catalyst IT
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-use tool_pdfpages\key_manager;
-
-defined('MOODLE_INTERNAL') || die();
+namespace tool_pdfpages;
 
 /**
  * Tests for key manager.
@@ -35,13 +24,13 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2021 Catalyst IT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class key_manager_test extends advanced_testcase {
+class key_manager_test extends \advanced_testcase {
 
     /**
      * Test generating an the instance for a URL.
      */
     public function test_generate_instance_for_url() {
-        $url = new moodle_url('/my/index.php');
+        $url = new \moodle_url('/my/index.php');
         $actual = key_manager::generate_instance_for_url($url);
 
         // Should have no more that 19 digits, due to field length constraints in DB.
@@ -67,12 +56,12 @@ class key_manager_test extends advanced_testcase {
 
         // Assign the user a role with the capability to generate PDFs.
         $roleid = $this->getDataGenerator()->create_role();
-        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
+        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, \context_system::instance());
         $this->getDataGenerator()->role_assign($roleid, $user->id);
 
         $this->setUser($user);
 
-        $url = new moodle_url('/my/index.php');
+        $url = new \moodle_url('/my/index.php');
 
         $actual = key_manager::create_user_key_for_url($user->id, $url);
 
@@ -94,9 +83,9 @@ class key_manager_test extends advanced_testcase {
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
 
-        $url = new moodle_url('/my/index.php');
+        $url = new \moodle_url('/my/index.php');
 
-        $this->expectException(moodle_exception::class);
+        $this->expectException(\moodle_exception::class);
         $this->expectExceptionMessage('Sorry, but you do not currently have permissions to do that ' .
             '(Generate a PDF from a Moodle URL).');
         key_manager::create_user_key_for_url($user->id, $url);
@@ -115,10 +104,10 @@ class key_manager_test extends advanced_testcase {
 
         // Assign the user a role with the capability to generate PDFs.
         $roleid = $this->getDataGenerator()->create_role();
-        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
+        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, \context_system::instance());
         $this->getDataGenerator()->role_assign($roleid, $user->id);
 
-        $url = new moodle_url('/my/index.php');
+        $url = new \moodle_url('/my/index.php');
 
         $actual = key_manager::create_user_key_for_url($user->id, $url, '123.121.234.0/30');
 
@@ -136,7 +125,7 @@ class key_manager_test extends advanced_testcase {
         // Spoof server remote address not matching CIDR IP restriction.
         $_SERVER['REMOTE_ADDR'] = '123.121.234.4';
 
-        $this->expectException(moodle_exception::class);
+        $this->expectException(\moodle_exception::class);
         $this->expectExceptionMessage('Client IP address mismatch');
         validate_user_key($actual, 'tool/pdfpages', $instance);
     }
@@ -154,10 +143,10 @@ class key_manager_test extends advanced_testcase {
 
         // Assign the user a role with the capability to generate PDFs.
         $roleid = $this->getDataGenerator()->create_role();
-        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
+        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, \context_system::instance());
         $this->getDataGenerator()->role_assign($roleid, $user->id);
 
-        $url = new moodle_url('/my/index.php');
+        $url = new \moodle_url('/my/index.php');
         $key = key_manager::create_user_key_for_url($user->id, $url);
 
         $conditions = [

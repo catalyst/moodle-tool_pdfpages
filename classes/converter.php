@@ -14,20 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Interface for converting Moodle pages to PDFs.
- *
- * @package    tool_pdfpages
- * @author     Tom Dickman <tomdickman@catalyst-au.net>
- * @copyright  2021 Catalyst IT
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace tool_pdfpages;
 
 use moodle_url;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Interface for converting Moodle pages to PDFs.

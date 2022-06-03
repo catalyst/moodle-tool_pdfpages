@@ -14,19 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Tests for login manager.
- *
- * @package    tool_pdfpages
- * @author     Tom Dickman <tomdickman@catalyst-au.net>
- * @copyright  2021 Catalyst IT
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-use tool_pdfpages\key_manager;
-use tool_pdfpages\login_manager;
-
-defined('MOODLE_INTERNAL') || die();
+namespace tool_pdfpages;
 
 /**
  * Tests for login manager.
@@ -36,7 +24,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2021 Catalyst IT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class login_manager_test extends advanced_testcase {
+class login_manager_test extends \advanced_testcase {
 
     /**
      * Test that user session is correctly created with a key login.
@@ -51,10 +39,10 @@ class login_manager_test extends advanced_testcase {
 
         // Assign the user a role with the capability to generate PDFs.
         $roleid = $this->getDataGenerator()->create_role();
-        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
+        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, \context_system::instance());
         $this->getDataGenerator()->role_assign($roleid, $user->id);
 
-        $url = new moodle_url('/my/index.php');
+        $url = new \moodle_url('/my/index.php');
         $key = key_manager::create_user_key_for_url($user->id, $url);
 
         // Check that the key record exists and is for the correct user.
@@ -75,7 +63,7 @@ class login_manager_test extends advanced_testcase {
         $key = md5($user->id . '_' . time() . random_string(40));
 
         // Invalid key should not allow login.
-        $this->expectException(moodle_exception::class);
+        $this->expectException(\moodle_exception::class);
         $this->expectExceptionMessage('Incorrect key');
         login_manager::login_with_key($key, $url);
     }
