@@ -14,18 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Chromium converter tests for tool_pdfpages.
- *
- * @package    tool_pdfpages
- * @author     Tom Dickman <tomdickman@catalyst-au.net>
- * @copyright  2021 Catalyst IT
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-use tool_pdfpages\converter_chromium;
-
-defined('MOODLE_INTERNAL') || die();
+namespace tool_pdfpages;
 
 /**
  * Chromium converter tests for tool_pdfpages.
@@ -35,7 +24,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2021 Catalyst IT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class converter_chromium_test extends advanced_testcase {
+class converter_chromium_test extends \advanced_testcase {
 
     /**
      * Test getting converter name.
@@ -71,7 +60,7 @@ class converter_chromium_test extends advanced_testcase {
 
         $converter = new converter_chromium();
         $actual = $converter->create_pdf_file($content, $filename);
-        $this->assertInstanceOf(stored_file::class, $actual);
+        $this->assertInstanceOf(\stored_file::class, $actual);
         $this->assertEquals('test.pdf', $actual->get_filename());
         $this->assertEquals('test.pdf', $actual->get_filename());
         $this->assertEquals('Hello World!', $actual->get_content());
@@ -103,7 +92,7 @@ class converter_chromium_test extends advanced_testcase {
      */
     public function test_validate_options() {
         // Testing a protected method, so we need to setup reflector magic.
-        $method = new ReflectionMethod('\tool_pdfpages\converter_chromium', 'validate_options');
+        $method = new \ReflectionMethod('\tool_pdfpages\converter_chromium', 'validate_options');
         $method->setAccessible(true); // Allow accessing of protected method.
 
         $converter = new converter_chromium();

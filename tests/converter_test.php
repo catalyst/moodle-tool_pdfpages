@@ -14,19 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Abstract converter class tests for tool_pdfpages.
- *
- * @package    tool_pdfpages
- * @author     Tom Dickman <tomdickman@catalyst-au.net>
- * @copyright  2021 Catalyst IT
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+namespace tool_pdfpages;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use tool_pdfpages\converter;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Abstract converter class tests for tool_pdfpages.
@@ -36,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2021 Catalyst IT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class converter_test extends advanced_testcase {
+class converter_test extends \advanced_testcase {
 
     /**
      * Create a mock converter.
@@ -82,7 +72,7 @@ class converter_test extends advanced_testcase {
 
         // Assign the user a role with the capability to generate PDFs.
         $roleid = $this->getDataGenerator()->create_role();
-        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
+        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, \context_system::instance());
         $this->getDataGenerator()->role_assign($roleid, $user->id);
 
         // Check that session is created for logged in user before conversion.
@@ -91,7 +81,7 @@ class converter_test extends advanced_testcase {
 
         $mock = $this->create_mock_converter('Test PDF content');
 
-        $url = new moodle_url('/');
+        $url = new \moodle_url('/');
         $mock->convert_moodle_url_to_pdf($url);
 
         // User session should be destroyed following conversion.
@@ -114,7 +104,7 @@ class converter_test extends advanced_testcase {
 
         // Assign the user a role with the capability to generate PDFs.
         $roleid = $this->getDataGenerator()->create_role();
-        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
+        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, \context_system::instance());
         $this->getDataGenerator()->role_assign($roleid, $user->id);
 
         // Check that session is created for logged in user before conversion.
@@ -123,7 +113,7 @@ class converter_test extends advanced_testcase {
 
         $mock = $this->create_mock_converter('Test PDF content');
 
-        $url = new moodle_url('/');
+        $url = new \moodle_url('/');
         $mock->convert_moodle_url_to_pdf($url, '', [], true);
 
         // User session should not be destroyed following conversion with `keepsession` flag set.

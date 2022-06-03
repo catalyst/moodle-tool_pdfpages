@@ -14,19 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Helper functions tests for tool_pdfpages.
- *
- * @package    tool_pdfpages
- * @author     Tom Dickman <tomdickman@catalyst-au.net>
- * @copyright  2021 Catalyst IT
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-use tool_pdfpages\helper;
-use tool_pdfpages\key_manager;
-
-defined('MOODLE_INTERNAL') || die();
+namespace tool_pdfpages;
 
 /**
  * Helper functions tests for tool_pdfpages.
@@ -36,7 +24,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2021 Catalyst IT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_pdfpages_helper_test extends advanced_testcase {
+class helper_test extends \advanced_testcase {
 
     /**
      * Test getting a plugin setting value.
@@ -47,7 +35,7 @@ class tool_pdfpages_helper_test extends advanced_testcase {
         set_config('wkhtmltopdfpath', '/usr/local/bin/wkhtmltopdf', 'tool_pdfpages');
         $this->assertEquals('/usr/local/bin/wkhtmltopdf', helper::get_config('wkhtmltopdfpath'));
         unset_config('wkhtmltopdfpath', 'tool_pdfpages');
-        $this->expectException(coding_exception::class);
+        $this->expectException(\coding_exception::class);
         $this->expectExceptionMessage("No configured tool_pdfpages setting 'wkhtmltopdfpath'.");
         helper::get_config('wkhtmltopdfpath');
     }
@@ -69,7 +57,7 @@ class tool_pdfpages_helper_test extends advanced_testcase {
         // proceeded by the '.pdf' file extension.
         $expected = sha1($testurl) . '.pdf';
 
-        $url = new moodle_url($testurl);
+        $url = new \moodle_url($testurl);
         $this->assertEquals($expected, helper::get_moodle_url_pdf_filename($url));
     }
 
@@ -94,7 +82,7 @@ class tool_pdfpages_helper_test extends advanced_testcase {
         $this->assertEquals('test.pdf', $actual['filename']);
 
         unset_config('wkhtmltopdfpath', 'tool_pdfpages');
-        $this->expectException(coding_exception::class);
+        $this->expectException(\coding_exception::class);
         $this->expectExceptionMessage("Cannot get fileinfo for 'wkhtmltopdf' converter, not installed and/or enabled.");
         helper::get_pdf_filerecord('test.pdf', 'wkhtmltopdf');
     }
@@ -123,16 +111,16 @@ class tool_pdfpages_helper_test extends advanced_testcase {
 
         // Assign the user a role with the capability to generate PDFs.
         $roleid = $this->getDataGenerator()->create_role();
-        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, context_system::instance());
+        assign_capability('tool/pdfpages:generatepdf', CAP_ALLOW, $roleid, \context_system::instance());
         $this->getDataGenerator()->role_assign($roleid, $user->id);
 
         $course = $this->getDataGenerator()->create_course();
 
-        $url = new moodle_url("/course/view.php?id={$course->id}");
+        $url = new \moodle_url("/course/view.php?id={$course->id}");
         $key = key_manager::create_user_key_for_url($user->id, $url);
 
         $actual = helper::get_proxy_url($url, $key);
-        $this->assertInstanceOf(moodle_url::class, $actual);
+        $this->assertInstanceOf(\moodle_url::class, $actual);
         $this->assertEquals($url->out(), $actual->get_param('url'));
         $this->assertEquals($key, $actual->get_param('key'));
     }
