@@ -11,6 +11,13 @@ This plugin will not work by itself without further development work and is inst
 4. [Testing Conversion](#testing-conversion)
 5. [License](#license)
 
+## Branches
+
+| Moodle version    | Branch            | PHP  | Chrome-PHP |
+|-------------------|-------------------|------|------------|
+| Moodle 4.1+       | MOODLE_401_STABLE | 8.1+ | 1.11       |
+| Moodle 3.9 - 4.1  | VERSION1          | 7.2+ | 0.9.0      |
+
 ## Requirements
 
 This plugin requires the following:
