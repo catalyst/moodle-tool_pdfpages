@@ -203,6 +203,21 @@ class converter_wkhtmltopdf extends converter {
     }
 
     /**
+     * Generate the PDF content from the provided HTML content.
+     *
+     * @param string $htmlcontent The raw HTML content to be converted to PDF.
+     * @param array $options any additional options to pass to converter, valid options vary with converter
+     * instance, see relevant converter for further details.
+     * @return string The generated PDF content.
+     */
+    protected function generate_pdf_content_from_html(string $htmlcontent, array $options = []): string {
+        $pdf = $this->build();
+        $pdf->setOptions($options);
+
+        return $pdf->getOutputFromHtml($htmlcontent);
+    }
+
+    /**
      * Validate a list of options.
      *
      * @param array $options any additional options to pass to conversion.

@@ -64,7 +64,7 @@ class converter_chromium extends converter {
         'jsCondition' => '(string) A JavaScript condition to be evaluated, specified as a string.
             It should return a boolean value indicating whether the condition has been met',
         'jsConditionParams' => '(array) An array of parameters to pass to the Javascript function.',
-        'customFlags' => '(array) An array of flags to pass to the BrowserFactory class.'
+        'customFlags' => '(array) An array of flags to pass to the BrowserFactory class.',
     ];
 
     /**
@@ -82,29 +82,14 @@ class converter_chromium extends converter {
     protected function generate_pdf_content(moodle_url $proxyurl, string $filename = '', array $options = [],
                                             string $cookiename = '', string $cookievalue = ''): string {
         try {
-            $browseroptions = [
-                'headless' => true,
-                'noSandbox' => true,
-            ];
-
-            if (isset($options['windowSize'])) {
-                $browseroptions['windowSize'] = $options['windowSize'];
-            }
-
-            if (isset($options['customFlags'])) {
-                $browseroptions['customFlags'] = $options['customFlags'];
-            }
-
-            $browserfactory = new BrowserFactory(helper::get_config($this->get_name() . 'path'));
-            $browser = $browserfactory->createBrowser($browseroptions);
-
+            $browser = $this->create_browser($options);
             $page = $browser->createPage();
             if (!empty($cookiename) && !empty($cookievalue)) {
                 $page->setCookies([
                     Cookie::create($cookiename, $cookievalue, [
                         'domain' => urldecode($proxyurl->get_param('url')),
                         'expires' => time() + DAYSECS
-                    ])
+                    ]),
                 ])->await();
             }
 
@@ -123,11 +108,7 @@ class converter_chromium extends converter {
             $jsconditionparams = isset($options['jsConditionParams']) ? $options['jsConditionParams'] : [];
             $this->wait_for_js_condition($page, $jscondition, $jsconditionparams, $timeout);
 
-            $pdfoptions = array_filter($options, function($option) {
-                $renderoptions = ['windowSize', 'userAgent', 'jsCondition', 'jsconditionparams', 'customFlags'];
-                return !in_array($option, $renderoptions);
-            }, ARRAY_FILTER_USE_KEY);
-
+            $pdfoptions = $this->filter_pdf_options($options);
             $pdf = $page->pdf($pdfoptions);
 
             return base64_decode($pdf->getBase64($timeout));
@@ -137,6 +118,71 @@ class converter_chromium extends converter {
                 $browser->close();
             }
         }
+    }
+
+    /**
+     * Initialises and returns a browser instance with specified options for PDF generation.
+     *
+     * @param  array $options An array of configuration options for the browser instance.
+     * @return Browser The configured browser instance.
+     */
+    protected function create_browser(array $options = []): Browser {
+        $defaultoptions = ['headless' => true, 'noSandbox' => true];
+        $validoptions = ['windowSize', 'customFlags'];
+        $browseroptions = array_merge($defaultoptions, array_intersect_key($options, array_flip($validoptions)));
+        $browserfactory = new BrowserFactory(helper::get_config($this->get_name() . 'path'));
+        $browser = $browserfactory->createBrowser($browseroptions);
+
+        return $browser;
+    }
+
+    /**
+     * Generate the PDF content from the provided HTML content.
+     *
+     * @param string $htmlcontent The raw HTML content to be converted to PDF.
+     * @param array $options any additional options to pass to converter, valid options vary with converter
+     * instance, see relevant converter for further details.
+     * @return string The generated PDF content.
+     */
+    protected function generate_pdf_content_from_html(string $htmlcontent, array $options = []): string {
+        try {
+            $browser = $this->create_browser($options);
+            $page = $browser->createPage();
+
+            if (isset($options['userAgent'])) {
+                $page->setUserAgent($options['userAgent']);
+            }
+
+            $page->setHtml($htmlcontent);
+
+            $timeout = 1000 * helper::get_config($this->get_name() . 'responsetimeout');
+
+            $jscondition = isset($options['jsCondition']) ? $options['jsCondition'] : null;
+            $jsconditionparams = isset($options['jsConditionParams']) ? $options['jsConditionParams'] : [];
+            $this->wait_for_js_condition($page, $jscondition, $jsconditionparams, $timeout);
+
+            $pdfoptions = $this->filter_pdf_options($options);
+            $pdf = $page->pdf($pdfoptions);
+
+            return base64_decode($pdf->getBase64($timeout));
+        } finally {
+            // Always close the browser instance to ensure that chromium process is stopped.
+            if (!empty($browser) && $browser instanceof Browser) {
+                $browser->close();
+            }
+        }
+    }
+
+    /**
+     * Filters the provided options array to remove rendering-specific options, leaving only PDF-specific options.
+     *
+     * @param array $options any additional options to pass to converter, valid options vary with converter
+     * instance, see relevant converter for further details.
+     * @return array The filtered array, containing only the options relevant for PDF generation.
+     */
+    protected function filter_pdf_options(array $options): array {
+        $renderoptions = ['windowSize', 'userAgent', 'jsCondition', 'jsconditionparams', 'customFlags'];
+        return array_diff_key($options, array_flip($renderoptions));
     }
 
     /**
