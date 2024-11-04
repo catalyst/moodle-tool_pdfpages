@@ -166,12 +166,37 @@ abstract class converter {
     }
 
     /**
+     * Generate the PDF content from the provided HTML content.
+     *
+     * @param string $htmlcontent The raw HTML content to be converted to PDF.
+     * @param array $options any additional options to pass to converter, valid options vary with converter
+     * instance, see relevant converter for further details.
+     * @return string The generated PDF content.
+     */
+    abstract protected function generate_pdf_content_from_html(string $htmlcontent, array $options = []): string;
+
+    /**
+     * Convert HTML to PDF.
+     *
+     * @param string $htmlcontent The HTML content.
+     * @param string $filename The file name to give file.
+     * @param array $options any additional options to pass to converter, valid options vary with converter
+     * instance, see relevant converter for further details.
+     * @return \stored_file the file or false if file could not be created.
+     */
+    final public function convert_html_to_pdf(string $htmlcontent, string $filename = '',
+            array $options = []): \stored_file {
+        $pdfcontent = $this->generate_pdf_content_from_html($htmlcontent, $options);
+        return $this->create_pdf_file($pdfcontent, $filename);
+    }
+
+    /**
      * Create a PDF file from content.
      *
      * @param string $content the PDF content to write to file.
      * @param string $filename the filename to give file.
      *
-     * @return bool|\stored_file the file or false if file could not be created.
+     * @return \stored_file the file or false if file could not be created.
      */
     public function create_pdf_file(string $content, string $filename) {
 
