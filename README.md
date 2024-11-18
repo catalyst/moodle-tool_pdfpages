@@ -1,4 +1,4 @@
-![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/catalyst/moodle-tool_pdfpages/ci.yml?branch=VERSION1)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/catalyst/moodle-tool_pdfpages/ci.yml?branch=MOODLE_405_STABLE)
 
 # PDF pages
 An API to assist in downloading Moodle internal webpages as PDFs into the Moodle file system using a headless browser.
@@ -13,10 +13,11 @@ This plugin will not work by itself without further development work and is inst
 
 ## Branches
 
-| Moodle version    | Branch            | PHP  | Chrome-PHP |
-|-------------------|-------------------|------|------------|
-| Moodle 4.1+       | MOODLE_401_STABLE | 8.1+ | 1.11       |
-| Moodle 3.9 - 4.1  | VERSION1          | 7.2+ | 0.9.0      |
+| Moodle version   | Branch            | PHP  | Chrome-PHP |
+|------------------|-------------------|------|------------|
+| Moodle 4.5+      | MOODLE_405_STABLE | 8.1+ | 1.11       |
+| Moodle 4.1 - 4.4 | MOODLE_401_STABLE | 8.1+ | 1.11       |
+| Moodle 3.9 - 4.1 | VERSION1          | 7.2+ | 0.9.0      |
 
 ## Requirements
 
