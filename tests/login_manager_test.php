@@ -51,7 +51,7 @@ class login_manager_test extends \advanced_testcase {
         $this->assertEquals($user->id, $record->userid);
 
         // Emulate using new browser without an existing session or login.
-        \core\session\manager::kill_all_sessions();
+        \core\session\manager::destroy_all();
         $this->setUser();
 
         login_manager::login_with_key($key, $url);
