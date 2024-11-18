@@ -23,6 +23,7 @@ namespace tool_pdfpages;
  * @author     Tom Dickman <tomdickman@catalyst-au.net>
  * @copyright  2021 Catalyst IT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers     \tool_pdfpages\login_manager
  */
 class login_manager_test extends \advanced_testcase {
 
@@ -50,7 +51,7 @@ class login_manager_test extends \advanced_testcase {
         $this->assertEquals($user->id, $record->userid);
 
         // Emulate using new browser without an existing session or login.
-        \core\session\manager::kill_all_sessions();
+        \core\session\manager::destroy_all();
         $this->setUser();
 
         login_manager::login_with_key($key, $url);

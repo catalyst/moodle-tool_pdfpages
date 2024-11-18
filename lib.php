@@ -15,15 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Class for converting Moodle pages to PDFs.
+ * Lib functions..
  *
  * @package    tool_pdfpages
  * @author     Tom Dickman <tomdickman@catalyst-au.net>
  * @copyright  2021 Catalyst IT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Serve a tool_pdfpages plugin file.
