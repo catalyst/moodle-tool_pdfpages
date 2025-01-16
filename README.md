@@ -1,4 +1,4 @@
-![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/catalyst/moodle-tool_pdfpages/ci.yml?branch=MOODLE_405_STABLE)
+[![ci](https://github.com/catalyst/moodle-tool_pdfpages/actions/workflows/ci.yml/badge.svg?branch=MOODLE_405_STABLE)](https://github.com/catalyst/moodle-tool_pdfpages/actions/workflows/ci.yml?branch=MOODLE_405_STABLE)
 
 # PDF pages
 An API to assist in downloading Moodle internal webpages as PDFs into the Moodle file system using a headless browser.
