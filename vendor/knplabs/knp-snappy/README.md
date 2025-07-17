@@ -1,9 +1,8 @@
 # Snappy
 
-[![Travis CI Build Status](https://travis-ci.org/KnpLabs/snappy.svg?branch=master)](https://travis-ci.org/KnpLabs/snappy)
+![Build Status](https://github.com/KnpLabs/snappy/actions/workflows/build.yaml/badge.svg)
 [![AppVeyor CI Build Status](https://ci.appveyor.com/api/projects/status/github/KnpLabs/snappy?branch=master&svg=true)](https://ci.appveyor.com/project/NiR-/snappy)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/KnpLabs/Gaufrette/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/KnpLabs/Gaufrette/?branch=master)
-[![StyleCI](https://styleci.io/repos/723980/shield?branch=master)](https://styleci.io/repos/723980)
 
 Snappy is a PHP library allowing thumbnail, snapshot or PDF generation from a url or a html page.
 It uses the excellent webkit-based [wkhtmltopdf and wkhtmltoimage](http://wkhtmltopdf.org/)
@@ -21,7 +20,7 @@ Following integrations are available:
 ## Installation using [Composer](http://getcomposer.org/)
 
 ```bash
-$ composer require knplabs/knp-snappy
+composer require knplabs/knp-snappy
 ```
 
 ## Usage
@@ -104,15 +103,15 @@ $snappy->resetOptions();
 If you want to download wkhtmltopdf and wkhtmltoimage with composer you add to `composer.json`:
 
 ```bash
-$ composer require h4cc/wkhtmltopdf-i386 0.12.x
-$ composer require h4cc/wkhtmltoimage-i386 0.12.x
+composer require h4cc/wkhtmltopdf-i386 0.12.x
+composer require h4cc/wkhtmltoimage-i386 0.12.x
 ```
 
 or this if you are in 64 bit based system:
 
 ```bash
-$ composer require h4cc/wkhtmltopdf-amd64 0.12.x
-$ composer require h4cc/wkhtmltoimage-amd64 0.12.x
+composer require h4cc/wkhtmltopdf-amd64 0.12.x
+composer require h4cc/wkhtmltoimage-amd64 0.12.x
 ```
 
 And then you can use it
