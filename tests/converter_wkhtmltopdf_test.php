@@ -25,12 +25,11 @@ namespace tool_pdfpages;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \tool_pdfpages\converter_wkhtmltopdf
  */
-class converter_wkhtmltopdf_test extends \advanced_testcase {
-
+final class converter_wkhtmltopdf_test extends \advanced_testcase {
     /**
      * Test getting converter name.
      */
-    public function test_get_name() {
+    public function test_get_name(): void {
         $converter = new converter_wkhtmltopdf();
         $this->assertEquals('wkhtmltopdf', $converter->get_name());
     }
@@ -38,7 +37,7 @@ class converter_wkhtmltopdf_test extends \advanced_testcase {
     /**
      * Test checking if converter is enabled.
      */
-    public function test_is_enabled() {
+    public function test_is_enabled(): void {
         $this->resetAfterTest();
 
         set_config('wkhtmltopdfpath', '/usr/bin/wkhtmltopdf-browser', 'tool_pdfpages');
@@ -51,7 +50,7 @@ class converter_wkhtmltopdf_test extends \advanced_testcase {
     /**
      * Test converter creates PDF files correctly.
      */
-    public function test_create_pdf_file() {
+    public function test_create_pdf_file(): void {
         $this->resetAfterTest();
 
         set_config('wkhtmltopdfpath', '/usr/bin/wkhtmltopdf-browser', 'tool_pdfpages');
@@ -69,7 +68,7 @@ class converter_wkhtmltopdf_test extends \advanced_testcase {
     /**
      * Test getting a previously converted PDF file.
      */
-    public function test_get_converted_moodle_url_pdf() {
+    public function test_get_converted_moodle_url_pdf(): void {
         $this->resetAfterTest();
 
         set_config('wkhtmltopdfpath', '/usr/bin/wkhtmltopdf-browser', 'tool_pdfpages');
@@ -90,7 +89,7 @@ class converter_wkhtmltopdf_test extends \advanced_testcase {
     /**
      * Test validating converter options.
      */
-    public function test_validate_options() {
+    public function test_validate_options(): void {
         // Testing a protected method, so we need to setup reflector magic.
         $method = new \ReflectionMethod('\tool_pdfpages\converter_wkhtmltopdf', 'validate_options');
         $method->setAccessible(true); // Allow accessing of protected method.
@@ -108,7 +107,7 @@ class converter_wkhtmltopdf_test extends \advanced_testcase {
             'margin-bottom' => '10mm',
             'margin-left'  => '10mm',
             'margin-right' => '10mm',
-            'afakeoption' => true // Not a valid option.
+            'afakeoption' => true, // Not a valid option.
         ];
 
         $actual = $method->invoke($converter, $options);

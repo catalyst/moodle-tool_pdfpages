@@ -28,7 +28,6 @@ use tool_pdfpages\pdf;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class converter {
-
     /**
      * Converter name, override in extending classes.
      */
@@ -46,8 +45,13 @@ abstract class converter {
      *
      * @return string raw PDF content of URL.
      */
-    abstract protected function generate_pdf_content(moodle_url $proxyurl, string $filename = '', array $options = [],
-                               string $cookiename = '', string $cookievalue = ''): string;
+    abstract protected function generate_pdf_content(
+        moodle_url $proxyurl,
+        string $filename = '',
+        array $options = [],
+        string $cookiename = '',
+        string $cookievalue = ''
+    ): string;
 
     /**
      * Convert a moodle URL to PDF and store in file system.
@@ -67,8 +71,14 @@ abstract class converter {
      *
      * @return \stored_file the stored file created during conversion.
      */
-    final public function convert_moodle_url_to_pdf(moodle_url $url, string $filename = '', array $options = [],
-            bool $keepsession = false, string $cookiename = '', string $cookievalue = ''): \stored_file {
+    final public function convert_moodle_url_to_pdf(
+        moodle_url $url,
+        string $filename = '',
+        array $options = [],
+        bool $keepsession = false,
+        string $cookiename = '',
+        string $cookievalue = ''
+    ): \stored_file {
         global $USER;
 
         try {
@@ -112,9 +122,15 @@ abstract class converter {
      *
      * @return \stored_file the stored file created during conversion.
      */
-    final public function convert_moodle_urls_to_pdf(array $urls, string $filename = '', array $options = [],
-            bool $keepsession = false, string $cookiename = '', string $cookievalue = '',
-            bool $printpagenumbers = false): \stored_file {
+    final public function convert_moodle_urls_to_pdf(
+        array $urls,
+        string $filename = '',
+        array $options = [],
+        bool $keepsession = false,
+        string $cookiename = '',
+        string $cookievalue = '',
+        bool $printpagenumbers = false
+    ): \stored_file {
         global $USER;
 
         $allurlsarevalid = empty(array_filter($urls, fn($url): bool => !$url instanceof moodle_url));
@@ -184,8 +200,11 @@ abstract class converter {
      * instance, see relevant converter for further details.
      * @return \stored_file the file or false if file could not be created.
      */
-    final public function convert_html_to_pdf(string $htmlcontent, string $filename = '',
-            array $options = []): \stored_file {
+    final public function convert_html_to_pdf(
+        string $htmlcontent,
+        string $filename = '',
+        array $options = []
+    ): \stored_file {
         $pdfcontent = $this->generate_pdf_content_from_html($htmlcontent, $options);
         return $this->create_pdf_file($pdfcontent, $filename);
     }

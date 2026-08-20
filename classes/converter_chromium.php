@@ -36,7 +36,6 @@ require_once($CFG->dirroot . '/admin/tool/pdfpages/vendor/autoload.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class converter_chromium extends converter {
-
     /**
      * Converter name.
      */
@@ -79,8 +78,13 @@ class converter_chromium extends converter {
      *
      * @return string raw PDF content of URL.
      */
-    protected function generate_pdf_content(moodle_url $proxyurl, string $filename = '', array $options = [],
-                                            string $cookiename = '', string $cookievalue = ''): string {
+    protected function generate_pdf_content(
+        moodle_url $proxyurl,
+        string $filename = '',
+        array $options = [],
+        string $cookiename = '',
+        string $cookievalue = ''
+    ): string {
         try {
             $browser = $this->create_browser($options);
             $page = $browser->createPage();
@@ -88,7 +92,7 @@ class converter_chromium extends converter {
                 $page->setCookies([
                     Cookie::create($cookiename, $cookievalue, [
                         'domain' => urldecode($proxyurl->get_param('url')),
-                        'expires' => time() + DAYSECS
+                        'expires' => time() + DAYSECS,
                     ]),
                 ])->await();
             }
@@ -199,8 +203,12 @@ class converter_chromium extends converter {
      * Defaults to 30000ms (30 seconds).
      * @throws \moodle_exception If the JavaScript condition does not finish within the specified timeout.
      */
-    protected function wait_for_js_condition(Page $page, ?string $jscondition = null, array $jsconditionparams = [],
-            int $timeout = 30000): void {
+    protected function wait_for_js_condition(
+        Page $page,
+        ?string $jscondition = null,
+        array $jsconditionparams = [],
+        int $timeout = 30000
+    ): void {
 
         if (empty($jscondition)) {
             return;

@@ -33,7 +33,6 @@ require_once($CFG->dirroot . '/admin/tool/pdfpages/vendor/autoload.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class converter_wkhtmltopdf extends converter {
-
     /**
      * Converter name.
      */
@@ -190,8 +189,13 @@ class converter_wkhtmltopdf extends converter {
      *
      * @return string raw PDF content of URL.
      */
-    protected function generate_pdf_content(moodle_url $proxyurl, string $filename = '', array $options = [],
-                                            string $cookiename = '', string $cookievalue = ''): string {
+    protected function generate_pdf_content(
+        moodle_url $proxyurl,
+        string $filename = '',
+        array $options = [],
+        string $cookiename = '',
+        string $cookievalue = ''
+    ): string {
         $pdf = new Pdf(helper::get_config($this->get_name() . 'path'));
         $pdf->setOptions($options);
 

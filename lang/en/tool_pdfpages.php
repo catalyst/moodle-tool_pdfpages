@@ -25,20 +25,19 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'PDF Pages';
 $string['error:converternotfound'] = 'Could not find enabled converter, please check tool_pages plugin settings.';
 $string['error:mathjaxtimeout'] = 'Timeout exceeded while waiting for MathJax to finish processing.';
 $string['error:urltopdf'] = 'URL to PDF conversion could not be completed.';
 $string['pdfpages:generatepdf'] = 'Generate a PDF from a Moodle URL';
+$string['pluginname'] = 'PDF Pages';
 $string['privacy:metadata'] = 'The PDF Pages plugin does not store any personal data.';
 $string['settings:accesskeyheading'] = 'Access key settings';
 $string['settings:accesskeyttl'] = 'TTL (Time to live)';
 $string['settings:accesskeyttl_desc'] = 'The time in seconds for access keys to live before expiring';
-$string['settings:convertersheading'] = 'Converter settings';
 $string['settings:chromiumpath'] = 'Path to Chromium';
 $string['settings:chromiumpath_desc'] = 'The path to the Chrome/Chromium binary';
 $string['settings:chromiumresponsetimeout'] = 'Response timeout';
 $string['settings:chromiumresponsetimeout_desc'] = 'Length of time in seconds to wait for response from Chromium';
+$string['settings:convertersheading'] = 'Converter settings';
 $string['settings:wkhtmltopdfpath'] = 'Path to wkhtmltopdf';
 $string['settings:wkhtmltopdfpath_desc'] = 'The path to the wkhtmltopdf binary';
-

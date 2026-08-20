@@ -25,12 +25,11 @@ namespace tool_pdfpages;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \tool_pdfpages\login_manager
  */
-class login_manager_test extends \advanced_testcase {
-
+final class login_manager_test extends \advanced_testcase {
     /**
      * Test that user session is correctly created with a key login.
      */
-    public function test_login_with_key() {
+    public function test_login_with_key(): void {
         global $DB, $USER;
 
         $this->resetAfterTest();
@@ -68,5 +67,4 @@ class login_manager_test extends \advanced_testcase {
         $this->expectExceptionMessage('Incorrect key');
         login_manager::login_with_key($key, $url);
     }
-
 }

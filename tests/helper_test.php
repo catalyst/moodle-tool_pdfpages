@@ -25,12 +25,11 @@ namespace tool_pdfpages;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \tool_pdfpages\helper
  */
-class helper_test extends \advanced_testcase {
-
+final class helper_test extends \advanced_testcase {
     /**
      * Test getting a plugin setting value.
      */
-    public function test_get_config() {
+    public function test_get_config(): void {
         $this->resetAfterTest();
 
         set_config('wkhtmltopdfpath', '/usr/local/bin/wkhtmltopdf', 'tool_pdfpages');
@@ -44,14 +43,14 @@ class helper_test extends \advanced_testcase {
     /**
      * Test getting the filearea for a Moodle URL's converted PDF.
      */
-    public function test_get_moodle_url_pdf_filearea() {
+    public function test_get_moodle_url_pdf_filearea(): void {
         $this->assertEquals('pdf', helper::get_moodle_url_pdf_filearea());
     }
 
     /**
      * Test getting the filename for a Moodle URL's converted PDF.
      */
-    public function test_get_moodle_url_pdf_filename() {
+    public function test_get_moodle_url_pdf_filename(): void {
         $testurl = 'https://www.nonesuch.com/some/path.index.html?id=55&test=value';
 
         // The filename for a Moodle URL PDF should be a SHA1 hash of the non-encoded URL string
@@ -65,7 +64,7 @@ class helper_test extends \advanced_testcase {
     /**
      * Test getting a file record for a converted URL PDF.
      */
-    public function test_get_pdf_filerecord() {
+    public function test_get_pdf_filerecord(): void {
         $this->resetAfterTest();
 
         $filename = 'test.pdf';
@@ -91,7 +90,7 @@ class helper_test extends \advanced_testcase {
     /**
      * Test checking if a converter is enabled.
      */
-    public function test_is_converter_enabled() {
+    public function test_is_converter_enabled(): void {
         $this->resetAfterTest();
 
         set_config('wkhtmltopdfpath', '/usr/local/bin/wkhtmltopdf', 'tool_pdfpages');
@@ -104,7 +103,7 @@ class helper_test extends \advanced_testcase {
     /**
      * Test that proxy URL is built correctly.
      */
-    public function test_get_proxy_url() {
+    public function test_get_proxy_url(): void {
         $this->resetAfterTest();
 
         $user = $this->getDataGenerator()->create_user();
