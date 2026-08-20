@@ -25,7 +25,6 @@ namespace tool_pdfpages;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class key_manager {
-
     /**
      * The script name to associate with keys.
      */
@@ -83,7 +82,7 @@ class key_manager {
         $record = [
             'script' => self::SCRIPT,
             'userid' => $userid,
-            'instance' => $instance
+            'instance' => $instance,
         ];
 
         return $DB->delete_records('user_private_key', $record);

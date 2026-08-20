@@ -25,7 +25,6 @@ namespace tool_pdfpages;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class converter_factory {
-
     /**
      * Instantiate a converter.
      *

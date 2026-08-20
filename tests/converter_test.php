@@ -27,8 +27,7 @@ use PHPUnit\Framework\MockObject\MockObject;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \tool_pdfpages\converter
  */
-class converter_test extends \advanced_testcase {
-
+final class converter_test extends \advanced_testcase {
     /**
      * Create a mock converter.
      *
@@ -50,7 +49,7 @@ class converter_test extends \advanced_testcase {
             'filearea' => 'pdf',
             'itemid' => 0,
             'filepath' => "/base/",
-            'filename' => 'test.pdf'
+            'filename' => 'test.pdf',
         ];
         $fs = get_file_storage();
         $file = $fs->create_file_from_string($filerecord, $pdfcontent);
@@ -63,7 +62,7 @@ class converter_test extends \advanced_testcase {
     /**
      * Test that converter always destroys access key session after conversion.
      */
-    public function test_convert_moodle_url_to_pdf_session_termination() {
+    public function test_convert_moodle_url_to_pdf_session_termination(): void {
         global $SESSION, $USER;
 
         $this->resetAfterTest();
@@ -95,7 +94,7 @@ class converter_test extends \advanced_testcase {
      * Test that converter does not destroy access key session after conversion when `keepsession`
      * parameter is set.
      */
-    public function test_convert_moodle_url_to_pdf_keep_session() {
+    public function test_convert_moodle_url_to_pdf_keep_session(): void {
         global $USER;
 
         $this->resetAfterTest();

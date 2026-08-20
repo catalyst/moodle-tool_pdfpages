@@ -25,12 +25,11 @@ namespace tool_pdfpages;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \tool_pdfpages\key_manager
  */
-class key_manager_test extends \advanced_testcase {
-
+final class key_manager_test extends \advanced_testcase {
     /**
      * Test generating an the instance for a URL.
      */
-    public function test_generate_instance_for_url() {
+    public function test_generate_instance_for_url(): void {
         $url = new \moodle_url('/my/index.php');
         $actual = key_manager::generate_instance_for_url($url);
 
@@ -48,7 +47,7 @@ class key_manager_test extends \advanced_testcase {
     /**
      * Test that user keys are created correctly for URLs.
      */
-    public function test_create_user_key_for_url() {
+    public function test_create_user_key_for_url(): void {
         $this->resetAfterTest();
 
         set_config('accesskeyttl', 60, 'tool_pdfpages');
@@ -76,7 +75,7 @@ class key_manager_test extends \advanced_testcase {
     /**
      * Test that URL key cannot be created if user doesn't have capability to create keys.
      */
-    public function test_create_key_for_url_no_permission() {
+    public function test_create_key_for_url_no_permission(): void {
         $this->resetAfterTest();
 
         set_config('accesskeyttl', 60, 'tool_pdfpages');
@@ -95,7 +94,7 @@ class key_manager_test extends \advanced_testcase {
     /**
      * Test that IP restrictions applied to access keys function correctly.
      */
-    public function test_create_user_key_for_url_iprestriction() {
+    public function test_create_user_key_for_url_iprestriction(): void {
         $this->resetAfterTest();
 
         set_config('accesskeyttl', 60, 'tool_pdfpages');
@@ -134,7 +133,7 @@ class key_manager_test extends \advanced_testcase {
     /**
      * Test that user keys are correctly deleted.
      */
-    public function test_delete_user_keys_for_url() {
+    public function test_delete_user_keys_for_url(): void {
         global $DB;
 
         $this->resetAfterTest();
@@ -154,7 +153,7 @@ class key_manager_test extends \advanced_testcase {
             'value' => $key,
             'script' => 'tool/pdfpages',
             'instance' => key_manager::generate_instance_for_url($url),
-            'userid' => $user->id
+            'userid' => $user->id,
         ];
 
         // Check that key is created in DB.

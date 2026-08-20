@@ -30,29 +30,45 @@ if (!empty($hassiteconfig)) {
     $settings = new admin_settingpage('tool_pdfpages', get_string('pluginname', 'tool_pdfpages'));
     $ADMIN->add('tools', $settings);
 
-    $settings->add(new admin_setting_heading('tool_pdfpages/converters',
-        get_string('settings:convertersheading', 'tool_pdfpages'), ''));
+    $settings->add(new admin_setting_heading(
+        'tool_pdfpages/converters',
+        get_string('settings:convertersheading', 'tool_pdfpages'),
+        ''
+    ));
 
-    $settings->add(new admin_setting_configexecutable('tool_pdfpages/wkhtmltopdfpath',
+    $settings->add(new admin_setting_configexecutable(
+        'tool_pdfpages/wkhtmltopdfpath',
         get_string('settings:wkhtmltopdfpath', 'tool_pdfpages'),
         get_string('settings:wkhtmltopdfpath_desc', 'tool_pdfpages'),
-        ''));
+        ''
+    ));
 
-    $settings->add(new admin_setting_configexecutable('tool_pdfpages/chromiumpath',
+    $settings->add(new admin_setting_configexecutable(
+        'tool_pdfpages/chromiumpath',
         get_string('settings:chromiumpath', 'tool_pdfpages'),
         get_string('settings:chromiumpath_desc', 'tool_pdfpages'),
-        ''));
+        ''
+    ));
 
-    $settings->add(new admin_setting_configtext('tool_pdfpages/chromiumresponsetimeout',
+    $settings->add(new admin_setting_configtext(
+        'tool_pdfpages/chromiumresponsetimeout',
         get_string('settings:chromiumresponsetimeout', 'tool_pdfpages'),
         get_string('settings:chromiumresponsetimeout_desc', 'tool_pdfpages'),
-        10, PARAM_INT));
+        10,
+        PARAM_INT
+    ));
 
-    $settings->add(new admin_setting_heading('tool_pdfpages/accesskey',
-        get_string('settings:accesskeyheading', 'tool_pdfpages'), ''));
+    $settings->add(new admin_setting_heading(
+        'tool_pdfpages/accesskey',
+        get_string('settings:accesskeyheading', 'tool_pdfpages'),
+        ''
+    ));
 
-    $settings->add(new admin_setting_configtext('tool_pdfpages/accesskeyttl',
+    $settings->add(new admin_setting_configtext(
+        'tool_pdfpages/accesskeyttl',
         get_string('settings:accesskeyttl', 'tool_pdfpages'),
         get_string('settings:accesskeyttl_desc', 'tool_pdfpages'),
-        MINSECS, PARAM_INT));
+        MINSECS,
+        PARAM_INT
+    ));
 }

@@ -21,7 +21,7 @@ use setasign\Fpdi\TcpdfFpdi;
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->libdir.'/pdflib.php');
+require_once($CFG->libdir . '/pdflib.php');
 
 /**
  * Class for combining PDFs.
@@ -32,7 +32,6 @@ require_once($CFG->libdir.'/pdflib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class pdf extends TcpdfFpdi {
-
     /**
      * Combines multiple PDFs into a single PDF.
      *
@@ -80,14 +79,18 @@ class pdf extends TcpdfFpdi {
      *                               defaults to false).
      * @return int The updated total number of pages.
      */
-    protected function add_pages_to_pdf(TcpdfFpdi $pdf, string $pdffilepath, int $totalpages,
-            bool $printpagenumbers = false): int {
+    protected function add_pages_to_pdf(
+        TcpdfFpdi $pdf,
+        string $pdffilepath,
+        int $totalpages,
+        bool $printpagenumbers = false
+    ): int {
         $pagecount = $pdf->setSourceFile($pdffilepath);
         for ($pageno = 1; $pageno <= $pagecount; $pageno++) {
             $template = $pdf->importPage($pageno);
             $size = $pdf->getTemplateSize($template);
 
-            $pdf->AddPage($size['orientation'], array($size['width'], $size['height']));
+            $pdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
             $pdf->setPageOrientation($size['orientation'], false, 0);
             $pdf->useTemplate($template);
 
@@ -96,7 +99,7 @@ class pdf extends TcpdfFpdi {
                 $pdf->SetY(-32);
                 $pdf->SetRightMargin(-23);
                 $pdf->SetFont('helvetica', 'R', 12);
-                $pdf->Cell(0, 10, 'Page '.$pdf->getAliasNumPage().' of '.$pdf->getAliasNbPages(), 0, 0, 'R');
+                $pdf->Cell(0, 10, 'Page ' . $pdf->getAliasNumPage() . ' of ' . $pdf->getAliasNbPages(), 0, 0, 'R');
             }
         }
 

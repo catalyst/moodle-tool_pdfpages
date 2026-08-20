@@ -36,7 +36,6 @@ require_once($CFG->libdir . '/filestorage/file_storage.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class helper {
-
     /**
      * The filearea to store Moodle URL PDFs in.
      */
@@ -109,7 +108,7 @@ class helper {
      * @return array array describing a file (file_info params)
      * @throws \coding_exception if converter is not installed or invalid.
      */
-    public static function get_pdf_filerecord(string $filename, string $converter) : array {
+    public static function get_pdf_filerecord(string $filename, string $converter): array {
         if (!self::is_converter_enabled($converter)) {
             throw new \coding_exception("Cannot get fileinfo for '$converter' converter, not installed and/or enabled.");
         }
@@ -136,7 +135,7 @@ class helper {
     public static function get_proxy_url(moodle_url $targeturl, string $key, ?int $contextid = null) {
         $params = [
             'url' => $targeturl->out(),
-            'key' => $key
+            'key' => $key,
         ];
 
         if (!is_null($contextid)) {

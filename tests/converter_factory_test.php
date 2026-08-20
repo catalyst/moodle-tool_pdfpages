@@ -25,12 +25,11 @@ namespace tool_pdfpages;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \tool_pdfpages\converter_factory
  */
-class converter_factory_test extends \advanced_testcase {
-
+final class converter_factory_test extends \advanced_testcase {
     /**
      * Test getting a converter instance.
      */
-    public function test_get_converter() {
+    public function test_get_converter(): void {
         $this->resetAfterTest();
 
         set_config('wkhtmltopdfpath', '/usr/local/bin/wkhtmltopdf', 'tool_pdfpages');
@@ -60,7 +59,7 @@ class converter_factory_test extends \advanced_testcase {
     /**
      * Test getting multiple converter instances.
      */
-    public function test_get_converters() {
+    public function test_get_converters(): void {
         $this->resetAfterTest();
 
         set_config('wkhtmltopdfpath', '/usr/local/bin/wkhtmltopdf', 'tool_pdfpages');
