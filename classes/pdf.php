@@ -61,10 +61,10 @@ class pdf extends TcpdfFpdi {
      */
     protected function initialise_pdf_settings(TcpdfFpdi $pdf): void {
         $pdf->setPageUnit('pt');
-        $pdf->scale = 72.0 / 100.0;
         $pdf->SetFillColor(255, 255, 176);
         $pdf->SetDrawColor(0, 0, 0);
-        $pdf->SetLineWidth(1.0 * $pdf->scale);
+        // One pixel at 100 DPI is 0.72 points.
+        $pdf->SetLineWidth(0.72);
         $pdf->SetTextColor(0, 0, 0);
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
