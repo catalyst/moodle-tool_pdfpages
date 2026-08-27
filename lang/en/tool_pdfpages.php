@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['error:converternotfound'] = 'Could not find enabled converter, please check tool_pages plugin settings.';
-$string['error:mathjaxtimeout'] = 'Timeout exceeded while waiting for MathJax to finish processing.';
+$string['error:jsconditiontimeout'] = 'Timeout exceeded while waiting for the JavaScript condition to finish processing.';
 $string['error:urltopdf'] = 'URL to PDF conversion could not be completed.';
 $string['pdfpages:generatepdf'] = 'Generate a PDF from a Moodle URL';
 $string['pluginname'] = 'PDF Pages';

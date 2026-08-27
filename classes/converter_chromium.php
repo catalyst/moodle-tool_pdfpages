@@ -199,7 +199,7 @@ class converter_chromium extends converter {
      * @param string|null $jscondition The JavaScript condition to be evaluated. This should be a function as a string,
      * and should return a boolean value indicating whether the condition has been met.
      * @param array $jsconditionparams An array of parameters to pass to the Javascript function.
-     * @param int $timeout The maximum time to wait for the MathJax to finish processing, in milliseconds.
+     * @param int $timeout The maximum time to wait for the JavaScript condition to finish processing, in milliseconds.
      * Defaults to 30000ms (30 seconds).
      * @throws \moodle_exception If the JavaScript condition does not finish within the specified timeout.
      */
@@ -229,7 +229,7 @@ class converter_chromium extends converter {
                 // Calculate elapsed time and check if timeout is exceeded.
                 $elapsedtime = (microtime(true) - $starttime) * 1000;
                 if ($elapsedtime >= $timeout) {
-                    throw new \moodle_exception('error:mathjaxtimeout', 'tool_pdfpages');
+                    throw new \moodle_exception('error:jsconditiontimeout', 'tool_pdfpages');
                 }
             }
         }
